@@ -1,0 +1,10 @@
+setuptools
+bob.extension
+bob.io.base
+bob.measure
+bob.bio.base
+bob.pipelines
+tqdm
+six
+scipy  # For audio files loading
+scikit-learn  # For pipelines Tranformers
