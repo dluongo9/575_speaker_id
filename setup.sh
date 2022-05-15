@@ -7,7 +7,7 @@ else
   source $1
 fi
 
-conda env create --prefix ./envs
+conda create --prefix ./envs
 echo 'installing bob.bio.spear'
 conda activate ./envs
 Conda install \
