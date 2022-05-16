@@ -7,10 +7,10 @@ else
   source $1
 fi
 
-conda env create --prefix ./envs
+conda create --prefix ./envs
 echo 'installing bob.bio.spear'
 conda activate ./envs
-Conda install \
+conda install \
 -c https://www.idiap.ch/software/bob/conda \
 -c defaults \
 -c https://www.idiap.ch/software/bob/conda/label/archive \

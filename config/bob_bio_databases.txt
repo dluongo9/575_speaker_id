@@ -1,0 +1,1 @@
+[YOUR_TIMIT_WAV_DIRECTORY] = dluongo9@dryas.ling.washington.edu:/corpora/LDC/LDC93S1/TIMIT
