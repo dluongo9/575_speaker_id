@@ -16,4 +16,4 @@ fi
 #-c https://www.idiap.ch/software/bob/conda/label/archive \
 #bob=4.0.0 bob.bio.spear
 
-conda env update --prefix ./envs --file environment_droplet.yml
+conda env create --prefix ./envs --file environment_droplet.yml
