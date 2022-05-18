@@ -7,11 +7,13 @@ else
   source $1
 fi
 
-conda create --prefix ./envs
-echo 'installing bob.bio.spear'
-conda activate ./envs
-conda install \
--c https://www.idiap.ch/software/bob/conda \
--c defaults \
--c https://www.idiap.ch/software/bob/conda/label/archive \
-bob=4.0.0 bob.bio.spear
+#conda create --prefix ./envs
+#echo 'installing bob.bio.spear'
+#conda activate ./envs
+#conda install \
+#-c https://www.idiap.ch/software/bob/conda \
+#-c defaults \
+#-c https://www.idiap.ch/software/bob/conda/label/archive \
+#bob=4.0.0 bob.bio.spear
+
+conda env update --prefix ./envs --file environment_droplet.yml
