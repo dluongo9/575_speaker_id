@@ -4,8 +4,8 @@ import pandas as pd
 
 IGNORE_FILES = ['.DS_Store']
 LANGS = {'russian': 'ru',
-              'tamil': 'ta',
-              'dhivehi': 'dv'}
+         'tamil': 'ta',
+         'dhivehi': 'dv'}
 PATHS = {'norm': ['train_world.lst'],
          'dev': ['for_models.lst', 'for_probes.lst'],
          'eval': ['for_models.lst', 'for_probes.lst']}
