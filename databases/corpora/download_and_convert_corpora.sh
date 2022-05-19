@@ -7,8 +7,7 @@ tar -xzf ./tars/russian -C ./untarred/
 wget -nc "https://mozilla-common-voice-datasets.s3.dualstack.us-west-2.amazonaws.com/cv-corpus-9.0-2022-04-27/cv-corpus-9.0-2022-04-27-dv.tar.gz?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIAQ3GQRTO3JKQEJPX7%2F20220518%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220518T214539Z&X-Amz-Expires=43200&X-Amz-Security-Token=FwoGZXIvYXdzEBcaDP4%2B2BhOhXOlZQCooiKSBKplKJlHdotJzju%2BHLm7PZMIWv6oL8HIXhGXy6zfL36p4adVkURe%2BIwUKpLodJ%2BlkZQt67wYk2TxCRdjSV%2B6Gqrdw4n2UnjLari08mXRx6r7XYo2MIf8Fc52y7EBMq9jFbGo2YO594xr81Q%2F1l5oDxHfRrhsTG2N%2BsAgwp9Y8OrYD8aBXEDgb3tq%2Bi%2FDDmVbmIR81SjpOgdYiK3oXeq3WPF1x%2BKwAABMeBcVAlMsMsEYj6y8aTZovDA0m7nv7I5uWLKx17nYnvvHUh23XgVDcuNfwphMM8M7%2BlwqNCIM0j%2BDrgpbYqvhN5nZgtuuD38TTYQaO29rgzHv8s2DoBOvsCVoxqLPI4RAGJUnF%2BtVGl1nrNj8%2FgGXp%2BdurXHPvYlHhad7t2VTfnaEUfYHm89tdIntxOYvC30WF8GBhiSSpdNKM%2FKQxVOkh5z162dDSnlvj8%2FHwyz8ikeiJOp44r7f%2F2tscp00G0rD8AOfrW4QWEN1cgdp345fL9OHDyNiMbRHHanL85yASx4123pkD9TCj0Yx%2BY46ksZryzxFA461erth1AOgvs03aDxCX2kcZ0fiolniZC0JhvK3hhLlp2Dl6Mezyl2NFm4rkNv9pbpJrWiZJ6ebPxSRUALDyTp7aKAsC9us8X3mqtgJblrRBeP3%2BhiOdyVclszeKBXCSB8y5V1tXdFO2ASoZEp%2B8sYul81Ki9bEKOrJlZQGMiqBGrixUlVPvOqtB%2BVOxIwVBv2m6j7UFSvLL2yUSZGf5dITk%2FB0S1bk9LY%3D&X-Amz-Signature=e8e4da1f32069ae305864dd5d7a7f04fc4c101b608ad68872058535fdf38d6c3&X-Amz-SignedHeaders=host" -O ./tars/dhivehi
 tar -xzf ./tars/dhivehi -C ./untarred/
 
-conda activate ../../envs
-python convert_mp3_to_wav.py ./untarred/russian/ru/clips ./untarred/russian/ru/wav
-python convert_mp3_to_wav.py ./untarred/dhivehi/dv/clips ./untarred/dhivehi/dv/wav
-python convert_mp3_to_wav.py ./untarred/tamil/ta/clips ./untarred/tamil/ta/wav
-conda deactivate
+./convert.sh ./untarred/russian/ru
+./convert.sh ./untarred/dhivehi/dv
+./convert.sh ./untarred/tamil/ta
+
