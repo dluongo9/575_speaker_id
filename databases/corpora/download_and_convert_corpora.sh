@@ -1,7 +1,7 @@
 #!/bin/sh
 echo tamil
 wget -nc "https://mozilla-common-voice-datasets.s3.dualstack.us-west-2.amazonaws.com/cv-corpus-9.0-2022-04-27/cv-corpus-9.0-2022-04-27-ta.tar.gz?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIAQ3GQRTO3DRIRSEXC%2F20220518%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220518T214023Z&X-Amz-Expires=43200&X-Amz-Security-Token=FwoGZXIvYXdzEBcaDEOXyUQ%2B9jxLMaMZcCKSBLe6XWndzt503aMM3pAoGvv4ZL87EQqST9EZaXFCsrIWcSEceigpLvrhcZ30X2N%2B0pUe0K3oILl2G9asU%2BzwuGTuMwHGbkXdxIDgCx14s9QCqxJ4H4dTl2jtvVGzTHp7iPI9Ymf%2B7stZc35R6phxJxVHP2LD5SsASMSfad8O94Be7TvdshazF9qyPO6zG6DLufLfilWeHgAWNNLZO2ThmjnXuZ6MXR8Em%2FXPrNoXz5q6M7VfuJrZYtaoPHX7URpb%2BN3hJSMcKl3yJrCwldW3stDBgiPSHpEzBsQ7eNhGi7FshjNpEOSHIQuSaw1M8ltLlAlf0zdTz2y9LwIVb3qfprZkHXiYbbCBJoEKo8fytNMpseEXE%2B0cpVQUuMR6218YmDbnb1V9gWApDG0Sa94fEN%2F7H%2F6%2B8enXFd0rWMotSqGeiSlepgWVpypxNHob9uWlCLvOCT7dRoBl2Isbznpj43wnVh4o%2FMMItgnEzBhFAAVlzCnO%2F0JDrRNvueA6tKpX4Psmxz22WV8QmGMsS5mduw24VC8H9JHGcylrNF0gMai0gP18%2BwCOofC6xTQyOqHElTh%2F6bpkAsNmsyPldk%2B1xreHw6Ll4BF7e2LJjIgdGJDKmu9JmC0hfNAlny9MXyxt%2B3mavG49cdH1yZwFZjfumUNAXC7K7%2Balr85a%2F3DgiWU1cuWX%2FY9lBLSTwcz7HO4XRdu7KLrOlZQGMio%2FHPOAPWB0AL2qRZoWCXJwmaIFy%2ByQ2qao%2FQkOzJjQInq69y5Ap%2B38rQo%3D&X-Amz-Signature=feac2b907fad19c2d28d547baf1acd3f8be9ef1dd3b8a0a04af155b8cc0f3e26&X-Amz-SignedHeaders=host" -O ./tars/tamil.tar.gz
-tar -xzf ./tars/tamil -C ./untarred/
+tar -xzf ./tars/tamil.tar.gz -C ./untarred/
 mv ./untarred/cv-corpus-9.0-2022-04-27/tamil ..
 
 echo russian
