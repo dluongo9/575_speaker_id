@@ -10,6 +10,7 @@ PATHS = {'norm': ['train_world.lst'],
          'dev': ['for_models.lst', 'for_probes.lst'],
          'eval': ['for_models.lst', 'for_probes.lst']}
 
+
 def make_lst():
   for lang in LANGS:
       if lang == 'russian':  # TODO take out
