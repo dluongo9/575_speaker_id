@@ -1,1 +1,1 @@
-[YOUR_VOXFORGE_DIRECTORY] = ./Audio/
+toy = ../databases/toy_database
