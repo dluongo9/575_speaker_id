@@ -1,3 +1,4 @@
+#!/bin/sh
 echo 'setting up conda'
 # setup conda
 if [ $# -eq 0 ]
