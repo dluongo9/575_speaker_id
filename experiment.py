@@ -30,7 +30,7 @@ extractor = 'mfcc-60'
 
 # Algorithm of the experiment; registered algorithms are: ['bic', 'distance-cosine', 'distance-euclidean', 'distance-hamming', 'gmm-banca', 'gmm-timit', 'gmm-tomi', 'gmm-tomi-scfc', 'gmm-voxforge', 'isv-avspoof', 'isv-mobio', 'isv-voxforge', 'ivec-avspoof', 'ivec-cosine-voxforge', 'ivec-plda-mobio', 'ivec-plda-voxforge', 'jfa-voxforge', 'lda', 'pca', 'pca+lda', 'pca+plda', 'plda']
 
-algorithm = bob.bio.gmm.algorithm.GMM(200)
+algorithm = 'isv-voxforge' #bob.bio.gmm.algorithm.GMM(200)
 
 
 # The sub-directory where the files of the current experiment should be stored. Please specify a directory name with a name describing your experiment
@@ -52,7 +52,7 @@ sub_directory = 'output'
 
 # The groups (i.e., 'dev', 'eval') for which the models and scores should be generated; by default, only the 'dev' group is evaluated
 
-groups = ['eval']
+groups = ['dev', 'eval']
 
 
 # Overwrite the protocol that is stored in the database by the given one (might not by applicable for all databases).
@@ -77,7 +77,7 @@ verbose = 2
 
 # Only report the commands that will be executed, but do not execute them.
 
-dry_run = False
+# dry_run = True
 
 
 # Force to erase former data if already exist
