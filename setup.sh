@@ -16,10 +16,10 @@ conda install \
 -c https://www.idiap.ch/software/bob/conda/label/archive \
 bob=4.0.0 bob.bio.spear
 
-pip install pydub
-conda install ffmpeg
-pip install ffprobe
-pip install ffmpeg
+#pip install pydub
+#conda install ffmpeg
+#pip install ffprobe
+#pip install ffmpeg
 
 
 #conda env create --prefix ./envs --file environment_droplet.yml
