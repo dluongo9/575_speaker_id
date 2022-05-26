@@ -22,7 +22,7 @@ def main():
 def make_lst():
     for lang in LANGS:
         if lang == 'russian':  # TODO take out
-            dir = os.path.join('../databases/corpora/untarred', lang, LANGS[lang])
+            dir = os.path.join('../../databases/corpora/untarred', lang, LANGS[lang])
 
             validated = pd.read_csv(os.path.join(dir, 'validated.tsv'), sep='\t', header=0)
             print(len(validated['client_id'].unique()), f'voices in {lang}')
