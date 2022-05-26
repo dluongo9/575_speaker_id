@@ -29,40 +29,57 @@ def make_lst():
             num_rows = len(validated['client_id'])
             print(f'{lang}: {len(validated["client_id"].unique())} voices, {num_rows} rows')
 
+            # splits = 50, 25, 25
+
+            for i in range(0, num_rows, 8):
+                with open('../../databases/toy_database/norm/train_world.lst', 'w') as file:
+                    file.write(validated['path'][i][:-4] + '\t' + validated['client_id'][i] + '\n')
+                    file.write(validated['path'][i+1][:-4] + '\t' + validated['client_id'][i+1] + '\n')
+                    file.write(validated['path'][i+2][:-4] + '\t' + validated['client_id'][i+2] + '\n')
+                    file.write(validated['path'][i+3][:-4] + '\t' + validated['client_id'][i+3] + '\n')
+                with open('../../databases/toy_database/dev/for_models.lst', 'w') as file:
+                    file.write(validated['path'][i+4][:-4] + '\t' + validated['client_id'][i+4] + '\n')
+                with open('../../databases/toy_database/dev/for_probes.lst', 'w') as file:
+                    file.write(validated['path'][i+5][:-4] + '\t' + validated['client_id'][i+5] + '\n')
+                with open('../../databases/toy_database/eval/for_models.lst', 'w') as file:
+                    file.write(validated['path'][i+6][:-4] + '\t' + validated['client_id'][i+6] + '\n')
+                with open('../../databases/toy_database/eval/for_probes.lst', 'w') as file:
+                    file.write(validated['path'][i+7][:-4] + '\t' + validated['client_id'][i+7] + '\n')
+
             # TODO update in-line with our final breakdown of train vs. dev vs. eval
-            with open('../../databases/toy_database/norm/train_world.lst', 'w') as file:
-                writer = []
-                for i in range(len(validated['path']))[:200]:  # slice to shorten
-                    path, client_id = validated['path'][i][:-4], validated['client_id'][i]
-                    writer.append(path + '\t' + client_id)
-                file.write('\n'.join(writer))
-
-            with open('../../databases/toy_database/dev/for_models.lst', 'w') as file:
-                writer = []
-                for i in range(len(validated['path']))[200:230]:
-                    path, client_id = validated['path'][i][:-4], validated['client_id'][i]
-                    writer.append(path + '\t' + client_id + '\t' + client_id)
-                file.write('\n'.join(writer))
-
-            with open('../../databases/toy_database/dev/for_probes.lst', 'w') as file:
-                writer = []
-                for i in range(len(validated['path']))[230:260]:
-                    path, client_id = validated['path'][i][:-4], validated['client_id'][i]
-                    writer.append(path + '\t' + client_id)
-                file.write('\n'.join(writer))
-
-            with open('../../databases/toy_database/eval/for_models.lst', 'w') as file:
-                writer = []
-                for i in range(len(validated['path']))[260:290]:
-                    path, client_id = validated['path'][i][:-4], validated['client_id'][i]
-                    writer.append(path + '\t' + client_id + '\t' + client_id)
-                file.write('\n'.join(writer))
-            with open('../../databases/toy_database/eval/for_probes.lst', 'w') as file:
-                writer = []
-                for i in range(len(validated['path']))[290:320]:
-                    path, client_id = validated['path'][i][:-4], validated['client_id'][i]
-                    writer.append(path + '\t' + client_id)
-                file.write('\n'.join(writer))
+            # with open('../../databases/toy_database/norm/train_world.lst', 'w') as file:
+            #     writer = []
+            #     for i in range(len(validated['path']))[:200]:  # slice to shorten
+            #         path, client_id = validated['path'][i][:-4], validated['client_id'][i]
+            #         writer.append(path + '\t' + client_id)
+            #     file.write('\n'.join(writer))
+            #
+            # with open('../../databases/toy_database/dev/for_models.lst', 'w') as file:
+            #     writer = []
+            #     for i in range(len(validated['path']))[200:230]:
+            #         path, client_id = validated['path'][i][:-4], validated['client_id'][i]
+            #         writer.append(path + '\t' + client_id + '\t' + client_id)
+            #     file.write('\n'.join(writer))
+            #
+            # with open('../../databases/toy_database/dev/for_probes.lst', 'w') as file:
+            #     writer = []
+            #     for i in range(len(validated['path']))[230:260]:
+            #         path, client_id = validated['path'][i][:-4], validated['client_id'][i]
+            #         writer.append(path + '\t' + client_id)
+            #     file.write('\n'.join(writer))
+            #
+            # with open('../../databases/toy_database/eval/for_models.lst', 'w') as file:
+            #     writer = []
+            #     for i in range(len(validated['path']))[260:290]:
+            #         path, client_id = validated['path'][i][:-4], validated['client_id'][i]
+            #         writer.append(path + '\t' + client_id + '\t' + client_id)
+            #     file.write('\n'.join(writer))
+            # with open('../../databases/toy_database/eval/for_probes.lst', 'w') as file:
+            #     writer = []
+            #     for i in range(len(validated['path']))[290:320]:
+            #         path, client_id = validated['path'][i][:-4], validated['client_id'][i]
+            #         writer.append(path + '\t' + client_id)
+            #     file.write('\n'.join(writer))
 
 
 if __name__ == "__main__":
