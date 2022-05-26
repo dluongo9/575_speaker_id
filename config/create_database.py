@@ -1,14 +1,10 @@
 import os
-import pickle
 
 import pandas as pd
-import bob.bio.base
 
 
 IGNORE_FILES = ['.DS_Store']
-LANGS = {'russian': 'ru',
-         'tamil': 'ta',
-         'dhivehi': 'dv'}
+LANGS = ['ru', 'ta', 'dv']
 PATHS = {'norm': ['train_world.lst'],
          'dev': ['for_models.lst', 'for_probes.lst'],
          'eval': ['for_models.lst', 'for_probes.lst']}
@@ -27,12 +23,14 @@ def make_lst():
         os.mkdir('../../databases/toy_database/dev')
     for lang in LANGS:
         if lang == 'russian':  # TODO take out
-            dir = os.path.join('../../databases/corpora/untarred', LANGS[lang])
+            dir = os.path.join('../../databases/corpora/untarred', lang)
 
             validated = pd.read_csv(os.path.join(dir, 'validated.tsv'), sep='\t', header=0)
-            print(len(validated['client_id'].unique()), f'voices in {lang}')
+            num_rows = len(validated['client_id'])
+            print(f'{lang}: {len(validated["client_id"].unique())} voices, {num_rows} rows')
 
-            with open('../../databases/toy_database/norm/train_world.lst', 'w') as file:  # TODO update in-line with folder/file from FOLDERS
+            # TODO update in-line with our final breakdown of train vs. dev vs. eval
+            with open('../../databases/toy_database/norm/train_world.lst', 'w') as file:
                 writer = []
                 for i in range(len(validated['path']))[:200]:  # slice to shorten
                     path, client_id = validated['path'][i][:-4], validated['client_id'][i]
@@ -65,15 +63,6 @@ def make_lst():
                     path, client_id = validated['path'][i][:-4], validated['client_id'][i]
                     writer.append(path + '\t' + client_id)
                 file.write('\n'.join(writer))
-
-
-# def create_database():
-#     db = bob.bio.base.database.FileListBioDatabase('../toy_database', 'toy')
-#     print(db)
-#     objects = db.objects()
-#     with open('our_database_pickled', 'wb') as output:
-#         pickle.dump(db, output)
-#     print(objects)
 
 
 if __name__ == "__main__":

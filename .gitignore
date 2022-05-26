@@ -131,5 +131,6 @@ dmypy.json
 # PyCharm
 .idea/*
 
-# envs
+# directories
 envs/*
+results/*
