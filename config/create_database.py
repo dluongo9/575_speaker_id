@@ -1,5 +1,4 @@
 import os
-
 import pandas as pd
 
 
@@ -45,6 +44,7 @@ def make_lst():
                     file.write(validated['path'][i+6][:-4] + '\t' + validated['client_id'][i+6] + '\n')
                 with open('../../databases/toy_database/eval/for_probes.lst', 'w') as file:
                     file.write(validated['path'][i+7][:-4] + '\t' + validated['client_id'][i+7] + '\n')
+                print(i)
 
             # TODO update in-line with our final breakdown of train vs. dev vs. eval
             # with open('../../databases/toy_database/norm/train_world.lst', 'w') as file:
