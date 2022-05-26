@@ -42,11 +42,11 @@ def make_lst():
                     file.write(validated['path'][i+2][:-4] + '\t' + validated['client_id'][i+2] + '\n')
                     file.write(validated['path'][i+3][:-4] + '\t' + validated['client_id'][i+3] + '\n')
                 with open('../../databases/toy_database/dev/for_models.lst', 'a') as file:
-                    file.write(validated['path'][i+4][:-4] + '\t' + validated['client_id'][i+4] + '\n')
+                    file.write(validated['path'][i+4][:-4] + '\t' + validated['client_id'][i+4] + '\t' + validated['client_id'][i+4] + '\n')
                 with open('../../databases/toy_database/dev/for_probes.lst', 'a') as file:
                     file.write(validated['path'][i+5][:-4] + '\t' + validated['client_id'][i+5] + '\n')
                 with open('../../databases/toy_database/eval/for_models.lst', 'a') as file:
-                    file.write(validated['path'][i+6][:-4] + '\t' + validated['client_id'][i+6] + '\n')
+                    file.write(validated['path'][i+6][:-4] + '\t' + validated['client_id'][i+6] + '\t' + validated['client_id'][i+6] + '\n')
                 with open('../../databases/toy_database/eval/for_probes.lst', 'a') as file:
                     file.write(validated['path'][i+7][:-4] + '\t' + validated['client_id'][i+7] + '\n')
                 print(i)
