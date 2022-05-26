@@ -20,6 +20,11 @@ def main():
 
 
 def make_lst():
+    if 'toy_database' not in os.listdir('../../databases'):
+        os.mkdir('../../databases/toy_database')
+        os.mkdir('../../databases/toy_database/norm')
+        os.mkdir('../../databases/toy_database/eval')
+        os.mkdir('../../databases/toy_database/dev')
     for lang in LANGS:
         if lang == 'russian':  # TODO take out
             dir = os.path.join('../../databases/corpora/untarred', LANGS[lang])
