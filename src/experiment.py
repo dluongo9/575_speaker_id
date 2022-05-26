@@ -12,8 +12,8 @@ import bob.bio.base.database
 import bob.bio.gmm.algorithm
 from bob.bio.spear.database import AudioBioFile
 # database = 'voxforge'
-database = bob.bio.base.database.FileListBioDatabase('../databases/toy_database', 'toy',
-                                                     original_directory='../databases/corpora/untarred/ru/wav',
+database = bob.bio.base.database.FileListBioDatabase('../../databases/toy_database', 'toy',
+                                                     original_directory='../../databases/corpora/untarred/ru/wav',
                                                      original_extension='.wav',
                                                      bio_file_class=AudioBioFile)
 
