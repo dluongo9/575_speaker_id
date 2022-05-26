@@ -23,6 +23,8 @@ conda install \
 -c https://www.idiap.ch/software/bob/conda/label/archive \
 bob.bio.gmm
 
+conda install pandas
+
 
 #pip install pydub
 #conda install ffmpeg
