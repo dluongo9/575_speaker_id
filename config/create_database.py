@@ -30,7 +30,8 @@ def make_lst():
 
             # splits = 50, 25, 25
 
-            for i in range(0, num_rows, 8):
+            # TODO: fix KeyError when reached i == num_rows (not an issue bc printing will have worked when exists)
+            for i in range(0, num_rows - (num_rows % 8), 8):
                 with open('../../databases/toy_database/norm/train_world.lst', 'w') as file:
                     file.write(validated['path'][i][:-4] + '\t' + validated['client_id'][i] + '\n')
                     file.write(validated['path'][i+1][:-4] + '\t' + validated['client_id'][i+1] + '\n')
