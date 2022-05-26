@@ -35,7 +35,7 @@ def make_lst():
             open('../../databases/toy_database/eval/for_models.lst', 'w').close()
             open('../../databases/toy_database/eval/for_probes.lst', 'w').close()
 
-            for i in range(0, num_rows - (num_rows % 8), 8):
+            for i in range(0, num_rows - (num_rows % 8), 8):  # TODO do we miss rows at the end bc of this
                 with open('../../databases/toy_database/norm/train_world.lst', 'a') as file:
                     file.write(validated['path'][i][:-4] + '\t' + validated['client_id'][i] + '\n')
                     file.write(validated['path'][i+1][:-4] + '\t' + validated['client_id'][i+1] + '\n')
