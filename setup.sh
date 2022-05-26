@@ -17,6 +17,13 @@ conda install \
 -c https://www.idiap.ch/software/bob/conda/label/archive \
 bob=4.0.0 bob.bio.spear
 
+conda install \
+-c https://www.idiap.ch/software/bob/conda \
+-c defaults \
+-c https://www.idiap.ch/software/bob/conda/label/archive \
+bob.bio.gmm
+
+
 #pip install pydub
 #conda install ffmpeg
 #pip install ffprobe

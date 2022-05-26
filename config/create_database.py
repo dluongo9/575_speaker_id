@@ -24,7 +24,7 @@ def make_lst():
         if lang == 'russian':  # TODO take out
             dir = os.path.join('../databases/corpora/untarred', lang, LANGS[lang])
 
-            validated = pd.read_csv(os.path.join(dir, 'invalidated.tsv'), sep='\t', header=0)
+            validated = pd.read_csv(os.path.join(dir, 'validated.tsv'), sep='\t', header=0)
             print(len(validated['client_id'].unique()), f'voices in {lang}')
 
             with open('../../databases/toy_database/norm/train_world.lst', 'w') as file:  # TODO update in-line with folder/file from FOLDERS
