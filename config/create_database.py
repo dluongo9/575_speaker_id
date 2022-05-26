@@ -22,7 +22,7 @@ def make_lst():
         os.mkdir('../../databases/toy_database/eval')
         os.mkdir('../../databases/toy_database/dev')
     for lang in LANGS:
-        if lang == 'russian':  # TODO take out
+        if lang == 'ru':  # TODO take out
             dir = os.path.join('../../databases/corpora/untarred', lang)
 
             validated = pd.read_csv(os.path.join(dir, 'validated.tsv'), sep='\t', header=0)
