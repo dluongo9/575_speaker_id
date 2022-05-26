@@ -30,7 +30,7 @@ extractor = 'mfcc-60'
 
 # Algorithm of the experiment; registered algorithms are: ['bic', 'distance-cosine', 'distance-euclidean', 'distance-hamming', 'gmm-banca', 'gmm-timit', 'gmm-tomi', 'gmm-tomi-scfc', 'gmm-voxforge', 'isv-avspoof', 'isv-mobio', 'isv-voxforge', 'ivec-avspoof', 'ivec-cosine-voxforge', 'ivec-plda-mobio', 'ivec-plda-voxforge', 'jfa-voxforge', 'lda', 'pca', 'pca+lda', 'pca+plda', 'plda']
 
-algorithm = 'isv-voxforge' #bob.bio.gmm.algorithm.GMM(200)
+algorithm = bob.bio.gmm.algorithm.GMM(200)
 
 
 # The sub-directory where the files of the current experiment should be stored. Please specify a directory name with a name describing your experiment
@@ -62,12 +62,12 @@ groups = ['dev', 'eval']
 
 # The directory for temporary files; if --temp-directory is not specified, "temp" is used
 
-temp_directory = '../temp'
+temp_directory = '../../temp'
 
 
 # The directory for resulting score files; if --result-directory is not specified, "results" is used
 
-result_directory = 'results/test_exp'
+result_directory = '../results/test_exp'
 
 
 # Increase the verbosity level from 0 (only error messages) to 1 (warnings), 2 (log messages), 3 (debug information) by adding the --verbose option as often as desired (e.g. '-vvv' for debug).
