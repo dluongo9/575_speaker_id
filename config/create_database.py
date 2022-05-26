@@ -28,22 +28,26 @@ def make_lst():
             num_rows = len(validated['client_id'])
             print(f'{lang}: {len(validated["client_id"].unique())} voices, {num_rows} rows')
 
-            # splits = 50, 25, 25
+            # create empty .lst files or empty existing .lst files
+            open('../../databases/toy_database/norm/train_world.lst', 'w').close()
+            open('../../databases/toy_database/dev/for_models.lst', 'w').close()
+            open('../../databases/toy_database/dev/for_probes.lst', 'w').close()
+            open('../../databases/toy_database/eval/for_models.lst', 'w').close()
+            open('../../databases/toy_database/eval/for_probes.lst', 'w').close()
 
-            # TODO: fix KeyError when reached i == num_rows (not an issue bc printing will have worked when exists)
             for i in range(0, num_rows - (num_rows % 8), 8):
-                with open('../../databases/toy_database/norm/train_world.lst', 'w') as file:
+                with open('../../databases/toy_database/norm/train_world.lst', 'a') as file:
                     file.write(validated['path'][i][:-4] + '\t' + validated['client_id'][i] + '\n')
                     file.write(validated['path'][i+1][:-4] + '\t' + validated['client_id'][i+1] + '\n')
                     file.write(validated['path'][i+2][:-4] + '\t' + validated['client_id'][i+2] + '\n')
                     file.write(validated['path'][i+3][:-4] + '\t' + validated['client_id'][i+3] + '\n')
-                with open('../../databases/toy_database/dev/for_models.lst', 'w') as file:
+                with open('../../databases/toy_database/dev/for_models.lst', 'a') as file:
                     file.write(validated['path'][i+4][:-4] + '\t' + validated['client_id'][i+4] + '\n')
-                with open('../../databases/toy_database/dev/for_probes.lst', 'w') as file:
+                with open('../../databases/toy_database/dev/for_probes.lst', 'a') as file:
                     file.write(validated['path'][i+5][:-4] + '\t' + validated['client_id'][i+5] + '\n')
-                with open('../../databases/toy_database/eval/for_models.lst', 'w') as file:
+                with open('../../databases/toy_database/eval/for_models.lst', 'a') as file:
                     file.write(validated['path'][i+6][:-4] + '\t' + validated['client_id'][i+6] + '\n')
-                with open('../../databases/toy_database/eval/for_probes.lst', 'w') as file:
+                with open('../../databases/toy_database/eval/for_probes.lst', 'a') as file:
                     file.write(validated['path'][i+7][:-4] + '\t' + validated['client_id'][i+7] + '\n')
                 print(i)
 
