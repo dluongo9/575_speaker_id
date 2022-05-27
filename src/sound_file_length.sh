@@ -1,40 +1,42 @@
 #!/bin/sh
 
-echo dv lengths
-start="date +%s"
-cd ../../databases/corpora/untarred/dv/clips/
-for file in *.mp3
-do
-  duration=$(ffprobe "$file" 2>&1 | awk '/Duration/ { print $2 }')
-  echo -e "$duration\t$file"
-  #echo -e "$file"
-done > ../../../../../575_speaker_id/config/dv_len.txt
-end="date +%s"
-runtime=$((end-start))
-echo dv runtime: $runtime
+lang=$1
 
-echo ru lengths
+echo $lang lengths
 start="date +%s"
-cd ../../ru
+cd ../../databases/corpora/untarred/$lang/clips/
 for file in *.mp3
 do
   duration=$(ffprobe "$file" 2>&1 | awk '/Duration/ { print $2 }')
   echo -e "$duration\t$file"
   #echo -e "$file"
-done > ../../../../../575_speaker_id/config/ru_len.txt
+done > ../../../../../575_speaker_id/config/"$lang"_len.txt
 end="date +%s"
 runtime=$((end-start))
-echo ru runtime: $runtime
+echo $lang runtime: $runtime
 
-echo ta lengths
-start="date +%s"
-cd ../../ta
-for file in *.mp3
-do
-  duration=$(ffprobe "$file" 2>&1 | awk '/Duration/ { print $2 }')
-  echo -e "$duration\t$file"
-  #echo -e "$file"
-done > ../../../../../575_speaker_id/config/ta_len.txt
-end="date +%s"
-runtime=$((end-start))
-echo ta runtime: $runtime
+#echo ru lengths
+#start="date +%s"
+#cd ../../ru
+#for file in *.mp3
+#do
+#  duration=$(ffprobe "$file" 2>&1 | awk '/Duration/ { print $2 }')
+#  echo -e "$duration\t$file"
+#  #echo -e "$file"
+#done > ../../../../../575_speaker_id/config/ru_len.txt
+#end="date +%s"
+#runtime=$((end-start))
+#echo ru runtime: $runtime
+#
+#echo ta lengths
+#start="date +%s"
+#cd ../../ta
+#for file in *.mp3
+#do
+#  duration=$(ffprobe "$file" 2>&1 | awk '/Duration/ { print $2 }')
+#  echo -e "$duration\t$file"
+#  #echo -e "$file"
+#done > ../../../../../575_speaker_id/config/ta_len.txt
+#end="date +%s"
+#runtime=$((end-start))
+#echo ta runtime: $runtime
