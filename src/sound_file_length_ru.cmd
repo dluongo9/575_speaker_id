@@ -6,4 +6,5 @@ log = len.log
 notification = complete
 transfer_executable = false
 request_GPUs = 1
+arguments = ru
 queue
