@@ -3,7 +3,7 @@ import os
 
 
 def main():
-    results_dir = '../results/test_exp/output/None/nonorm'
+    results_dir = '../output/test_exp/output/None/nonorm'
     dev_scores = pd.read_csv(os.path.join(results_dir, 'scores-dev'), header=None, delim_whitespace=True)
     #print(dev_scores)
     sorted = dev_scores.sort_values(by=[2])

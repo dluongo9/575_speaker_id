@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import sys
 
 
 IGNORE_FILES = ['.DS_Store']
@@ -24,6 +25,7 @@ def make_lst():
         if lang == 'ru':  # TODO take out
             dir = os.path.join('../../databases/corpora/untarred', lang)
 
+            # TODO: change from invalidated to validated
             validated = pd.read_csv(os.path.join(dir, 'validated.tsv'), sep='\t', header=0)
             num_rows = len(validated['client_id'])
             print(f'{lang}: {len(validated["client_id"].unique())} voices, {num_rows} rows')
@@ -35,7 +37,9 @@ def make_lst():
             open('../../databases/toy_database/eval/for_models.lst', 'w').close()
             open('../../databases/toy_database/eval/for_probes.lst', 'w').close()
 
-            for i in range(0, num_rows - (num_rows % 8), 8):  # TODO do we miss rows at the end bc of this
+            # print(validated)
+            # for i in range(0, num_rows - (num_rows % 8), 8):  # TODO do we miss rows at the end bc of this
+            for i in range(0, 56, 8):
                 with open('../../databases/toy_database/norm/train_world.lst', 'a') as file:
                     file.write(validated['path'][i][:-4] + '\t' + validated['client_id'][i] + '\n')
                     file.write(validated['path'][i+1][:-4] + '\t' + validated['client_id'][i+1] + '\n')

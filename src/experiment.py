@@ -67,7 +67,7 @@ temp_directory = '../../temp'
 
 # The directory for resulting score files; if --result-directory is not specified, "results" is used
 
-result_directory = '../results/test_exp'
+result_directory = '../output/test_exp'
 
 
 # Increase the verbosity level from 0 (only error messages) to 1 (warnings), 2 (log messages), 3 (debug information) by adding the --verbose option as often as desired (e.g. '-vvv' for debug).

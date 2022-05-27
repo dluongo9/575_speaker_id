@@ -133,4 +133,4 @@ dmypy.json
 
 # directories
 envs/*
-results/*
+output/*
