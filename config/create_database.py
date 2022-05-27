@@ -16,6 +16,9 @@ def main():
 
 
 def make_lst():
+
+    # TODO defaultdict for counts of demographics for each high resource UBM
+
     if 'toy_database' not in os.listdir('../../databases'):
         os.mkdir('../../databases/toy_database')
         os.mkdir('../../databases/toy_database/norm')
