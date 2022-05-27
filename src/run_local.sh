@@ -1,7 +1,7 @@
 #!/bin/sh
 echo create database
 cd ../config
-python create_database.py
+python create_database_legacy.py
 
 echo selective convert py
 python selective_convert.py
