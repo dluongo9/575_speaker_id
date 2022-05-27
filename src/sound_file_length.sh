@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 for file in ../../databases/corpora/untarred/ru/clips/*.mp3
 do
