@@ -11,127 +11,150 @@ PATHS = {'norm': ['train_world.lst'],
 
 
 def main():
-    make_lst()
+    ubm_data_duration, per_model_duration, duration_threshold = 1, 1, 5
+    if len(sys.argv) > 1:
+        ubm_data_duration = int(sys.argv[1])
+    if len(sys.argv) > 2:
+        per_model_duration = int(sys.argv[2])
+    if len(sys.argv) > 3:
+        duration_threshold = int(sys.argv[3])
+    make_lst(ubm_data_duration, per_model_duration, duration_threshold)
     # create_database()
 
 
-def make_lst():
+def make_lst(ubm_data_duration, per_model_duration, duration_threshold):
+    """
+    :param ubm_data_duration: hours
+    :param per_model_duration: minutes
+    :param duration_threshold: seconds
+    :return:
+    """
+    # pd.set_option('display.max_rows', None)
+    pd.set_option('display.max_columns', None)
+    pd.set_option('display.width', None)
 
     # TODO defaultdict for counts of demographics for each high resource UBM
 
-    if 'toy_database' not in os.listdir('../../databases'):
-        os.mkdir('../../databases/toy_database')
-        os.mkdir('../../databases/toy_database/norm')
-        os.mkdir('../../databases/toy_database/eval')
-        os.mkdir('../../databases/toy_database/dev')
-    for lang in LANGS:
-        if lang == 'ru':  # TODO take out
-            dir = os.path.join('../../databases/corpora/untarred', lang)
-            validated = pd.read_csv(os.path.join(dir, 'validated.tsv'), sep='\t', header=0, low_memory=False)
+    # russian
+    if 'ubm-ru' not in os.listdir('../../databases'):
+        os.mkdir('../../databases/ubm-ru')
+        os.mkdir('../../databases/ubm-ru/norm')
+        os.mkdir('../../databases/ubm-ru/dev')
+        os.mkdir('../../databases/ubm-ru/eval')
 
-            sorted = validated.sort_values(by=['client_id'])
-            sorted.reset_index(drop=True, inplace=True)
-            sorted.drop(columns=['sentence', 'up_votes', 'down_votes', 'accents', 'locale', 'segment'], inplace=True)
-            # print(sorted)
-            # [print(f'{col}:', sorted[col].value_counts(), sep='\n', end='\n\n\n') for col in sorted.columns]
-            # speakers = dict()
-            speaker_idx = dict(sorted['client_id'].value_counts())
-            # print(speaker_idx)
+    # tamil
+    if 'ubm-ta' not in os.listdir('../../databases'):
+        os.mkdir('../../databases/ubm-ta')
+        os.mkdir('../../databases/ubm-ta/norm')
+        os.mkdir('../../databases/ubm-ta/dev')
+        os.mkdir('../../databases/ubm-ta/eval')
 
-            true_speaker = 'c77a5a202fd9ebf667e4e0253209dfba12a41e298ef6fadfbcab46df5343976a9e5a536eda641aae83dc890845eb7f53a5dfb4bc81cfe6418ff84c823aa80d00'
-            true_speaker_files = sorted[sorted['client_id'] == true_speaker]
-            true_speaker_files.reset_index(drop=True, inplace=True)
-            true_speaker_dev_model = true_speaker_files[0:30]
-            true_speaker_eval_model = true_speaker_files[30:60]
-            true_speaker_eval_model.reset_index(drop=True, inplace=True)
-            true_speaker_probes = true_speaker_files[60:62]
-            true_speaker_probes.reset_index(drop=True, inplace=True)
+    validated_ru, validated_ta, validated_dv = preprocess_df()
 
-            true_speaker_dev_probe = true_speaker_probes[0:1]
-            true_speaker_eval_probe = true_speaker_probes[1:2]
-            # print("true speaker eval probe:", true_speaker_eval_probe, sep='\n')
-            true_speaker_eval_probe.reset_index(drop=True, inplace=True)
-            # print(true_speaker_dev_model)
-            # print(true_speaker_probes)
+    ages = set(validated_ru['age'].unique()) & set(validated_ta['age'].unique())
+    genders = {'male', 'female'}  # not other /:
 
-            impostor_speaker1 = '367647909a85ac462fd9a50478047cb29639ef175ceeb4f7af680066643613192176366edf5e5e43d91b022c0a9c10498376849a8b6e09c9e150f8850442a762'
-            impostor_speaker2 = '198a312bd7727493644139df5843693a153a7c2afc3accd3b4512092907de1d8c791d348cee930468257d77c6cbe860c1725c64f0480cb764e1f8735a2d348c3'
-            impostor_probe1_files = sorted[sorted['client_id'] == impostor_speaker1]
-            impostor_probe1_files.reset_index(drop=True, inplace=True)
-            impostor_probe2_files = sorted[sorted['client_id'] == impostor_speaker2]
-            impostor_probe2_files.reset_index(drop=True, inplace=True)
-            # print(impostor_probe_files)
-            impostor_dev_probe1 = impostor_probe1_files[0:1]
-            impostor_eval_probe1 = impostor_probe1_files[1:2]
-            impostor_dev_probe2 = impostor_probe2_files[0:1]
-            impostor_eval_probe2 = impostor_probe2_files[1:2]
-            # print("impostor eval probe", impostor_eval_probe, sep='\n')
-            impostor_eval_probe1.reset_index(drop=True, inplace=True)
-            impostor_eval_probe2.reset_index(drop=True, inplace=True)
-            ubm_speakers = sorted[sorted['client_id'] != impostor_speaker1]
-            ubm_speakers = ubm_speakers[ubm_speakers['client_id'] != true_speaker]
-            ubm_speakers.reset_index(drop=True, inplace=True)
+    primary_list = []
+    mirror_list = []
+    primary_list_metrics = dict()
 
-            sample = ubm_speakers.sample(n=200, axis='index')
-            sample.reset_index(drop=True, inplace=True)
-            # print(sample)
+    primary_list_metrics['ages'] = dict()
+    for key in ages:
+        primary_list_metrics['ages'][key] = 0
 
-            num_rows = len(validated['client_id'])
-            print(f'{lang}: {len(validated["client_id"].unique())} voices, {num_rows} rows')
+    primary_list_metrics['genders'] = dict()
+    for key in genders:
+        primary_list_metrics['genders'][key] = 0
 
-            # create empty .lst files or empty existing .lst files
-            open('../../databases/toy_database/norm/train_world.lst', 'w').close()
-            open('../../databases/toy_database/dev/for_models.lst', 'w').close()
-            open('../../databases/toy_database/dev/for_probes.lst', 'w').close()
-            open('../../databases/toy_database/eval/for_models.lst', 'w').close()
-            open('../../databases/toy_database/eval/for_probes.lst', 'w').close()
+    primary_list_metrics['duration'] = 0
 
-            # create norm training
-            with open('../../databases/toy_database/norm/train_world.lst', 'a') as file:
-                for i in range(len(sample['client_id'])):
-                    file.write(sample['path'][i][:-4] + '\t' +
-                               sample['client_id'][i] + '\n')
+    mirror_list_metrics = dict(zip(primary_list_metrics.keys(), primary_list_metrics.values()))
 
-            # create dev models
-            with open('../../databases/toy_database/dev/for_models.lst', 'a') as file:
-                for i in range(len(true_speaker_dev_model['client_id'])):
-                    file.write(true_speaker_dev_model['path'][i][:-4] + '\t' +
-                               true_speaker_dev_model['client_id'][i] + '\t' +
-                               true_speaker_dev_model['client_id'][i] + '\n')
+    # while primary_list_metrics['duration'] < ubm_data_duration:
+    # sample, mirror_sample = find_next_candidates(primary_list_metrics, mirror_list_metrics,
+    #                                              validated_ru, validated_ta,
+    #                                              duration_threshold)
+    # TODO
 
-            # create dev probes
-            with open('../../databases/toy_database/dev/for_probes.lst', 'a') as file:
-                for i in range(len(true_speaker_dev_probe)):
-                    file.write(true_speaker_dev_probe['path'][i][:-4] + '\t' +
-                               true_speaker_dev_probe['client_id'][i] + '\n')
-                for i in range(len(impostor_dev_probe1)):
-                    file.write(impostor_dev_probe1['path'][i][:-4] + '\t' +
-                               impostor_dev_probe1['client_id'][i] + '\n')
-                for i in range(len(impostor_dev_probe2)):
-                    file.write(impostor_dev_probe2['path'][i][:-4] + '\t' +
-                               impostor_dev_probe2['client_id'][i] + '\n')
+    print("Primary list metrics:", primary_list_metrics, sep='\t')
+    print("Mirror list metrics:", mirror_list_metrics, sep='\t')
 
-            # create eval models
-            with open('../../databases/toy_database/eval/for_models.lst', 'a') as file:
-                for i in range(len(true_speaker_eval_model)):
-                    file.write(true_speaker_eval_model['path'][i][:-4] + '\t' +
-                               true_speaker_eval_model['client_id'][i] + '\t' +
-                               true_speaker_eval_model['client_id'][i] + '\n')
 
-            # create eval probes
-            with open('../../databases/toy_database/eval/for_probes.lst', 'a') as file:
-                for i in range(len(true_speaker_eval_probe)):
-                    # print("true speaker eval probe", true_speaker_eval_probe['client_id'][i], sep='\n')
-                    file.write(true_speaker_eval_probe['path'][i][:-4] + '\t' +
-                               true_speaker_eval_probe['client_id'][i] + '\n')
-                for i in range(len(impostor_eval_probe1)):
-                    # print("impostor eval probe", impostor_eval_probe['client_id'][i], sep='\n')
-                    file.write(impostor_eval_probe1['path'][i][:-4] + '\t' +
-                               impostor_eval_probe1['client_id'][i] + '\n')
-                for i in range(len(impostor_eval_probe2)):
-                    # print("impostor eval probe", impostor_eval_probe['client_id'][i], sep='\n')
-                    file.write(impostor_eval_probe2['path'][i][:-4] + '\t' +
-                               impostor_eval_probe2['client_id'][i] + '\n')
+def create_metrics_dict():
+    pass
+
+
+def preprocess_durations(lang):
+    with open(f'{lang}_len.txt', 'r') as lens:
+        lens = [line.strip().split() for line in lens.readlines() if len(line.strip().split()) > 1]
+
+    durations, filenames = [], []
+    for row in lens:
+        # print(row)
+        duration, filename = row
+        duration = list(map(float, duration.strip(',').split(':')))
+        duration[0] *= 3600
+        duration[1] *= 60
+        duration = sum(duration)
+        durations.append(duration)
+        filenames.append(filename)
+
+    return pd.DataFrame(list(zip(durations, filenames)),
+                        columns=['duration', 'path'])
+
+
+def preprocess_df():
+    dir_ru = '../../databases/corpora/untarred/ru'
+    dir_ta = '../../databases/corpora/untarred/ta'
+    dir_dv = '../../databases/corpora/untarred/dv'
+    pre_validated_ru = pd.read_csv(os.path.join(dir_ru, 'validated.tsv'), sep='\t', header=0, low_memory=False)
+    pre_validated_ta = pd.read_csv(os.path.join(dir_ta, 'validated.tsv'), sep='\t', header=0, low_memory=False)
+    pre_validated_dv = pd.read_csv(os.path.join(dir_dv, 'validated.tsv'), sep='\t', header=0, low_memory=False)
+
+    ru_duration_df = preprocess_durations('ru')
+    ta_duration_df = preprocess_durations('ta')
+    dv_duration_df = preprocess_durations('dv')
+
+    validated_ru = pd.merge(pre_validated_ru, ru_duration_df, on='path', how='inner')
+    validated_ta = pd.merge(pre_validated_ta, ta_duration_df, on='path', how='inner')
+    validated_dv = pd.merge(pre_validated_dv, dv_duration_df, on='path', how='inner')
+
+    # validated_ru.sort_values(by=['duration'], ascending=False)
+    validated_ru.drop(columns=['sentence', 'up_votes', 'down_votes', 'accents', 'locale', 'segment'], inplace=True)
+    validated_ru.dropna(axis='index', how='any', inplace=True)
+    validated_ru.reset_index(drop=True, inplace=True)
+
+    # validated_ta.sort_values(by=['duration'], ascending=False)
+    validated_ta.drop(columns=['sentence', 'up_votes', 'down_votes', 'accents', 'locale', 'segment'], inplace=True)
+    validated_ta.dropna(axis='index', how='any', inplace=True)
+    validated_ta.reset_index(drop=True, inplace=True)
+
+    # validated_dv.sort_values(by=['duration'], ascending=False)
+    validated_dv.drop(columns=['sentence', 'up_votes', 'down_votes', 'accents', 'locale', 'segment'], inplace=True)
+    validated_dv.dropna(axis='index', how='any', inplace=True)
+    validated_dv.reset_index(drop=True, inplace=True)
+
+    return validated_ru, validated_ta, validated_dv
+
+
+def find_next_candidates(primary_list_metrics, mirror_list_metrics, validated_ru, validated_ta, duration_threshold):
+
+    age = min(primary_list_metrics['age1'], primary_list_metrics['age2'])  # TODO include all age ranges here
+    if primary_list_metrics['male'] < primary_list_metrics['female']:
+        gender = 'male'
+    else:
+        gender = 'female'
+    found = False
+    sample_idx = 0
+    while not found:
+        sample = "TODO" # TODO pull sample with gender and age
+        sample_dur = 0 # TODO get sample duration
+        #if age, gender, sample_dur in validated_ta: # TODO see if equivalent datapoint in mirror set
+            # found = True
+            # mirror_sample = "TODO" # TODO pull mirror sample
+        # else:
+        #     sample_idx += 1
+    return sample, mirror_sample
 
 
 if __name__ == "__main__":
