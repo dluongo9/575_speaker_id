@@ -1,13 +1,13 @@
 import os
 import pandas as pd
 import sys
+import random
+import copy
+from collections import defaultdict
 
-
-IGNORE_FILES = ['.DS_Store']
-LANGS = ['ru', 'ta', 'dv']
-PATHS = {'norm': ['train_world.lst'],
-         'dev': ['for_models.lst', 'for_probes.lst'],
-         'eval': ['for_models.lst', 'for_probes.lst']}
+# PATHS = {'norm': ['train_world.lst'],
+#          'dev': ['for_models.lst', 'for_probes.lst'],
+#          'eval': ['for_models.lst', 'for_probes.lst']}
 
 
 def main():
@@ -28,7 +28,6 @@ def main():
     ubm_data_duration *= 3600.0  # convert hours to seconds
     per_model_duration *= 60.0  # convert minutes to seconds
     make_lst(ubm_data_duration, per_model_duration, duration_threshold)
-    # create_database()
 
 
 def make_lst(ubm_data_duration, per_model_duration, duration_threshold):
@@ -38,18 +37,18 @@ def make_lst(ubm_data_duration, per_model_duration, duration_threshold):
     :param duration_threshold: seconds
     :return:
     """
-    # pd.set_option('display.max_rows', None)
-    pd.set_option('display.max_columns', None)
-    pd.set_option('display.width', None)
-
-    # TODO defaultdict for counts of demographics for each high resource UBM
 
     # russian
     if 'ubm-ru' not in os.listdir('../../databases'):
         os.mkdir('../../databases/ubm-ru')
-        os.mkdir('../../databases/ubm-ru/norm')
+        os.mkdir('../../databases/ubm-ru/')
         os.mkdir('../../databases/ubm-ru/dev')
         os.mkdir('../../databases/ubm-ru/eval')
+    open('../../databases/ubm-ru/norm/train_world.lst', 'w').close()
+    open('../../databases/ubm-ru/dev/for_models.lst', 'w').close()
+    open('../../databases/ubm-ru/dev/for_probes.lst', 'w').close()
+    open('../../databases/ubm-ru/eval/for_models.lst', 'w').close()
+    open('../../databases/ubm-ru/eval/for_probes.lst', 'w').close()
 
     # tamil
     if 'ubm-ta' not in os.listdir('../../databases'):
@@ -57,14 +56,17 @@ def make_lst(ubm_data_duration, per_model_duration, duration_threshold):
         os.mkdir('../../databases/ubm-ta/norm')
         os.mkdir('../../databases/ubm-ta/dev')
         os.mkdir('../../databases/ubm-ta/eval')
+    open('../../databases/ubm-ta/norm/train_world.lst', 'w').close()
+    open('../../databases/ubm-ta/dev/for_models.lst', 'w').close()
+    open('../../databases/ubm-ta/dev/for_probes.lst', 'w').close()
+    open('../../databases/ubm-ta/eval/for_models.lst', 'w').close()
+    open('../../databases/ubm-ta/eval/for_probes.lst', 'w').close()
 
     validated_ru, validated_ta, validated_dv = preprocess_df()
 
     ages = set(validated_ru['age'].unique()) & set(validated_ta['age'].unique())
-    genders = {'male', 'female'}  # not other /:
+    genders = {'male', 'female'}  # not other /: (we don't know what that means in this data)
 
-    primary_list = []
-    mirror_list = []
     primary_list_metrics = dict()
 
     primary_list_metrics['ages'] = dict()
@@ -75,7 +77,7 @@ def make_lst(ubm_data_duration, per_model_duration, duration_threshold):
     for key in genders:
         primary_list_metrics['genders'][key] = 0
 
-    primary_list_metrics['duration'] = 0
+    primary_list_metrics['duration'] = 0.0
 
     mirror_list_metrics = copy.deepcopy(primary_list_metrics)
 
