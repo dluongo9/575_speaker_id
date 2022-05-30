@@ -12,7 +12,7 @@ from collections import defaultdict
 
 def main():
     # pandas display settings
-    pd.set_option('display.max_rows', None)
+    # pd.set_option('display.max_rows', None)
     pd.set_option('display.max_columns', None)
     pd.set_option('display.width', None)
 
@@ -81,41 +81,40 @@ def make_lst(ubm_data_duration, per_model_duration, duration_threshold):
 
     mirror_list_metrics = copy.deepcopy(primary_list_metrics)
 
-    ubm_ru_norm, ubm_ta_norm = [], []
+    # ubm_ru_norm, ubm_ta_norm = [], []
+    #
+    # while primary_list_metrics['duration'] < ubm_data_duration:
+    #     print('ubm total (hours):', primary_list_metrics['duration'] / 3600.0, sep='\t')
+    #     sample_idx, mirror_sample_idx = find_next_candidates(primary_list_metrics,
+    #                                                          validated_ru, validated_ta,
+    #                                                          duration_threshold)
+    #     primary_sample = validated_ru.loc[[sample_idx]]
+    #     mirror_sample = validated_ta.loc[[mirror_sample_idx]]
+    #
+    #     # update metrics in dictionaries
+    #     primary_list_metrics['ages'][primary_sample['age'].values[0]] += 1
+    #     primary_list_metrics['genders'][primary_sample['gender'].values[0]] += 1
+    #     primary_list_metrics['duration'] += float(primary_sample['duration'].values[0])
+    #     mirror_list_metrics['ages'][mirror_sample['age'].values[0]] += 1
+    #     mirror_list_metrics['genders'][mirror_sample['gender'].values[0]] += 1
+    #     mirror_list_metrics['duration'] += float(mirror_sample['duration'].values[0])
+    #
+    #     # put strings in list to later write to .lst files
+    #     ubm_ru_norm.append(validated_ru.loc[sample_idx, 'path'][:-4] + '\t' +
+    #                        validated_ru.loc[sample_idx, 'client_id'])
+    #     ubm_ta_norm.append(validated_ta.loc[mirror_sample_idx, 'path'][:-4] + '\t' +
+    #                        validated_ta.loc[mirror_sample_idx, 'client_id'])
+    #
+    #     # update data frames
+    #     validated_ru.drop(labels=sample_idx, axis='index', inplace=True)
+    #     validated_ta.drop(labels=mirror_sample_idx, axis='index', inplace=True)
+    #
+    # print("\nPrimary list metrics:", primary_list_metrics, sep='\t')
+    # print("Mirror list metrics:", mirror_list_metrics, '\n', sep='\t')
+    #
+    # write_to_lst('../../databases/ubm-ru/norm/train_world.lst', ubm_ru_norm)
+    # write_to_lst('../../databases/ubm-ta/norm/train_world.lst', ubm_ta_norm)
 
-    while primary_list_metrics['duration'] < ubm_data_duration:
-        print('ubm total (hours):', primary_list_metrics['duration'] / 3600.0, sep='\t')
-        sample_idx, mirror_sample_idx = find_next_candidates(primary_list_metrics,
-                                                             validated_ru, validated_ta,
-                                                             duration_threshold)
-        primary_sample = validated_ru.loc[[sample_idx]]
-        mirror_sample = validated_ta.loc[[mirror_sample_idx]]
-
-        # update metrics in dictionaries
-        primary_list_metrics['ages'][primary_sample['age'].values[0]] += 1
-        primary_list_metrics['genders'][primary_sample['gender'].values[0]] += 1
-        primary_list_metrics['duration'] += float(primary_sample['duration'].values[0])
-        mirror_list_metrics['ages'][mirror_sample['age'].values[0]] += 1
-        mirror_list_metrics['genders'][mirror_sample['gender'].values[0]] += 1
-        mirror_list_metrics['duration'] += float(mirror_sample['duration'].values[0])
-
-        # put strings in list to later write to .lst files
-        ubm_ru_norm.append(validated_ru.loc[sample_idx, 'path'][:-4] + '\t' +
-                           validated_ru.loc[sample_idx, 'client_id'])
-        ubm_ta_norm.append(validated_ta.loc[mirror_sample_idx, 'path'][:-4] + '\t' +
-                           validated_ta.loc[mirror_sample_idx, 'client_id'])
-
-        # update data frames
-        validated_ru.drop(labels=sample_idx, axis='index', inplace=True)
-        validated_ta.drop(labels=mirror_sample_idx, axis='index', inplace=True)
-
-    print("\nPrimary list metrics:", primary_list_metrics, sep='\t')
-    print("Mirror list metrics:", mirror_list_metrics, '\n', sep='\t')
-
-    write_to_lst('../../databases/ubm-ru/norm/train_world.lst', ubm_ru_norm)
-    write_to_lst('../../databases/ubm-ta/norm/train_world.lst', ubm_ta_norm)
-
-    # dv_demo = defaultdict(int)
     speakers, genders, ages, durations = [], [], [], []
     for speaker in validated_dv['client_id'].unique():
         speakers.append(speaker)
@@ -126,13 +125,19 @@ def make_lst(ubm_data_duration, per_model_duration, duration_threshold):
                              columns=['client_id', 'gender', 'age', 'duration'])
     sorted_dv.sort_values(by=['duration'], inplace=True)
     sorted_dv.reset_index(drop=True, inplace=True)
-    print('sorted_dv:', sorted_dv, sep='\n')
-    print('\nall dv df durations:', validated_dv['duration'].value_counts(bins=2), sep='\n')
-    # [print(key, dv_demo[key], sep=': ', end='\n') for key in dv_demo]
+    # print('sorted_dv (cumulative per speaker):\n', sorted_dv)
+    # print('\n\nall rows sorted by duration per clip:\n', validated_dv.sort_values(by=['duration']))
 
+    demog_duration = defaultdict(int)
+    for i in sorted_dv.index:
+        gender, age = sorted_dv.loc[i, 'gender'], sorted_dv.loc[i, 'age']
+        demog_duration[(age, gender)] += sorted_dv.loc[i, 'duration']
+    # print('demographics x duration:')
+    # [print(f'{key}:\t{demog_duration[key]}') for key in demog_duration if 'twenties' in key or 'thirties' in key]
 
-def create_metrics_dict():
-    pass
+    # print(sorted_dv[sorted_dv['age'] == 'fourties']['gender'].value_counts())
+
+    make_dv_samples(validated_dv)
 
 
 def preprocess_durations(lang):
@@ -154,6 +159,25 @@ def preprocess_durations(lang):
                         columns=['duration', 'path'])
 
 
+def remove_duplicates(df):
+    """
+    Remove samples from speakers who belong to more than one demographic group.
+    :param df: data frame to process
+    :return: df without the time traveling or transitioning speaker
+    """
+    # key = client_id, value = set of demog tuples
+    demogs = dict()
+    for i in df.index:
+        if df.loc[i, 'client_id'] not in demogs:
+            demogs[df.loc[i, 'client_id']] = {(df.loc[i, 'age'], df.loc[i, 'gender'])}
+        else:
+            demogs[df.loc[i, 'client_id']].add((df.loc[i, 'age'], df.loc[i, 'gender']))
+    for speaker in demogs:
+        if len(demogs[speaker]) > 1:
+            df = df[df['client_id'] != speaker]
+    return df
+
+
 def preprocess_df():
     dir_ru = '../../databases/corpora/untarred/ru'
     dir_ta = '../../databases/corpora/untarred/ta'
@@ -173,6 +197,7 @@ def preprocess_df():
     # validated_ru.sort_values(by=['duration'], ascending=False)
     validated_ru.drop(columns=['sentence', 'up_votes', 'down_votes', 'accents', 'locale', 'segment'], inplace=True)
     validated_ru.dropna(axis='index', how='any', inplace=True)
+    validated_ru = remove_duplicates(validated_ru)
     validated_ru.reset_index(drop=True, inplace=True)
 
     # validated_ta.sort_values(by=['duration'], ascending=False)
@@ -212,9 +237,109 @@ def find_next_candidates(primary_list_metrics, validated_ru_df, validated_ta_df,
                 if len(filtered_mirror_df.index) > 0:
                     mirror_sample_idx = random.choice(seq=filtered_mirror_df.index)
                     return sample_idx, mirror_sample_idx
-
-                # "take random sample from filtered_mirror_df and return row number"
     raise Exception("I couldn't find a matching sample in the primary and mirror lists that matched the criteria.")
+
+
+def make_dv_samples(validated_dv):
+    # per demographic intersection, per speaker, number of clips > 3 seconds
+    # outer keys: 4 demog, inner keys each: unique speaker, values: # clips
+    clips_per_speaker = {('twenties', 'female'): defaultdict(int),
+                         ('twenties', 'male'): defaultdict(int),
+                         ('thirties', 'female'): defaultdict(int),
+                         ('thirties', 'male'): defaultdict(int)}
+    clips_per_speaker_df = validated_dv.loc[(validated_dv['age'] == 'twenties') |
+                                            (validated_dv['age'] == 'thirties')]
+    clips_per_speaker_df = clips_per_speaker_df.loc[(2.5 <= clips_per_speaker_df['duration']) &
+                                                    (clips_per_speaker_df['duration'] <= 4.5)]
+    for i in clips_per_speaker_df.index:
+        age, gender = clips_per_speaker_df.loc[i, 'age'], clips_per_speaker_df.loc[i, 'gender']
+        speaker = clips_per_speaker_df.loc[i, 'client_id']
+        clips_per_speaker[(age, gender)][speaker] += 1
+    # print(clips_per_speaker_df)
+    # print(clips_per_speaker)
+    dv_samples = [sorted(clips_per_speaker[key].items(),
+                         key=lambda x: x[1],
+                         reverse=True)[:4] for key in clips_per_speaker]  # top 4 speakers by number of clips
+    [print(line) for line in dv_samples]
+
+    dev_imp_samples, eval_imp_samples = [], []
+    dev_model_samples, dev_true_probe_samples = [], []
+    eval_model_samples, eval_true_probe_samples = [], []
+
+    for demog in dv_samples:
+        dev_model_sp, eval_model_sp, dev_imp_sp, eval_imp_sp = demog[0][0], demog[1][0], demog[2][0], demog[3][0]
+        #print(eval_model_sp)
+
+        # get dev_imp_samples
+        dev_imp_samples_df = clips_per_speaker_df[clips_per_speaker_df['client_id'] == dev_imp_sp].sort_values(
+            by=['duration'],
+            ascending=False)
+        dev_imp_samples += [(dev_imp_samples_df.loc[i, 'path'][:-4],  # filename
+                             dev_imp_samples_df.loc[i, 'client_id'],  # model_id
+                             dev_imp_samples_df.loc[i, 'client_id'],  # claimed_client_id
+                             dev_imp_samples_df.loc[i, 'client_id'])  # client_id
+                            for i in dev_imp_samples_df.index[-15:]]
+
+        # get eval_imp samples
+        eval_imp_samples_df = clips_per_speaker_df[clips_per_speaker_df['client_id'] == eval_imp_sp].sort_values(
+            by=['duration'],
+            ascending=False)
+        eval_imp_samples += [(eval_imp_samples_df.loc[i, 'path'][:-4],  # filename
+                              eval_imp_samples_df.loc[i, 'client_id'],  # model_id
+                              eval_imp_samples_df.loc[i, 'client_id'],  # claimed_client_id
+                              eval_imp_samples_df.loc[i, 'client_id'])  # client_id
+                             for i in eval_imp_samples_df.index[-15:]]
+
+        # get dev model samples and dev probe samples
+        dev_model_samples_df = clips_per_speaker_df[clips_per_speaker_df['client_id'] == dev_model_sp].sort_values(
+            by=['duration'],
+            ascending=False)
+        # print(dev_model_samples_df)
+        # [print(i) for i in dev_model_samples_df.index[:10]]
+        dev_model_samples += [(dev_model_samples_df.loc[i, 'path'][:-4],  # filename
+                               dev_model_samples_df.loc[i, 'client_id'],  # model_id
+                               dev_model_samples_df.loc[i, 'client_id'])  # client_id
+                              for i in dev_model_samples_df.index[:20]]
+        dev_true_probe_samples += [(dev_model_samples_df.loc[i, 'path'][:-4],  # filename
+                                    dev_model_samples_df.loc[i, 'client_id'],  # model_id
+                                    dev_model_samples_df.loc[i, 'client_id'],  # claimed_client_id
+                                    dev_model_samples_df.loc[i, 'client_id'])  # client_id
+                                   for i in dev_model_samples_df.index[-15:]]
+
+        # get eval model samples
+        eval_model_samples_df = clips_per_speaker_df[clips_per_speaker_df['client_id'] == eval_model_sp].sort_values(
+            by=['duration'],
+            ascending=False)
+        # [print(sample) for sample in dev_model_samples]
+        eval_model_samples += [(eval_model_samples_df.loc[i, 'path'][:-4],  # filename
+                                eval_model_samples_df.loc[i, 'client_id'],  # model_id
+                                eval_model_samples_df.loc[i, 'client_id'])  # client_id
+                               for i in eval_model_samples_df.index[:20]]
+        eval_true_probe_samples += [(eval_model_samples_df.loc[i, 'path'][:-4],  # filename
+                                     eval_model_samples_df.loc[i, 'client_id'],  # model_id
+                                     eval_model_samples_df.loc[i, 'client_id'],  # claimed_client_id
+                                     eval_model_samples_df.loc[i, 'client_id'])  # client_id
+                                    for i in eval_model_samples_df.index[-15:]]
+
+    dev_model_set = set([sample[1] for sample in dev_model_samples])
+    eval_model_set = set([sample[1] for sample in eval_model_samples])
+    print(dev_model_set)
+    print(eval_model_set)
+
+    # print(dev_imp_samples, len(dev_imp_samples), sep="\n", end='\n\n\n')
+    # print(eval_imp_samples, len(eval_imp_samples), sep="\n")
+
+    # # write to russian dev and eval lists
+    # write_to_lst('../../databases/ubm-ru/dev/for_models.lst', dev_model_samples)
+    # write_to_lst('../../databases/ubm-ru/dev/for_probes.lst')
+    # write_to_lst('../../databases/ubm-ru/eval/for_models.lst', eval_model_samples)
+    # write_to_lst('../../databases/ubm-ru/eval/for_probes.lst')
+    #
+    # # write to tamil dev and eval lists
+    # write_to_lst('../../databases/ubm-ta/dev/for_models.lst', dev_model_samples)
+    # write_to_lst('../../databases/ubm-ta/dev/for_probes.lst')
+    # write_to_lst('../../databases/ubm-ta/eval/for_models.lst', eval_model_samples)
+    # write_to_lst('../../databases/ubm-ta/eval/for_probes.lst')
 
 
 def write_to_lst(path, lst):
