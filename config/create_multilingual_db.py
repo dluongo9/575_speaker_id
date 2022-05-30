@@ -203,11 +203,13 @@ def preprocess_df():
     # validated_ta.sort_values(by=['duration'], ascending=False)
     validated_ta.drop(columns=['sentence', 'up_votes', 'down_votes', 'accents', 'locale', 'segment'], inplace=True)
     validated_ta.dropna(axis='index', how='any', inplace=True)
+    validated_ta = remove_duplicates(validated_ta)
     validated_ta.reset_index(drop=True, inplace=True)
 
     # validated_dv.sort_values(by=['duration'], ascending=False)
     validated_dv.drop(columns=['sentence', 'up_votes', 'down_votes', 'accents', 'locale', 'segment'], inplace=True)
     validated_dv.dropna(axis='index', how='any', inplace=True)
+    validated_dv = remove_duplicates(validated_dv)
     validated_dv.reset_index(drop=True, inplace=True)
 
     return validated_ru, validated_ta, validated_dv
