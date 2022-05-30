@@ -252,7 +252,7 @@ def make_dv_samples(validated_dv):
     clips_per_speaker_df = validated_dv.loc[(validated_dv['age'] == 'twenties') |
                                             (validated_dv['age'] == 'thirties')]
     clips_per_speaker_df = clips_per_speaker_df.loc[(2.5 <= clips_per_speaker_df['duration']) &
-                                                    (clips_per_speaker_df['duration'] <= 4.5)]
+                                                    (clips_per_speaker_df['duration'] <= 5.0)]
     for i in clips_per_speaker_df.index:
         age, gender = clips_per_speaker_df.loc[i, 'age'], clips_per_speaker_df.loc[i, 'gender']
         speaker = clips_per_speaker_df.loc[i, 'client_id']
@@ -291,7 +291,6 @@ def make_dv_samples(validated_dv):
                               eval_imp_samples_df.loc[i, 'client_id'],  # claimed_client_id
                               eval_imp_samples_df.loc[i, 'client_id'])  # client_id
                              for i in eval_imp_samples_df.index[-15:]]
-
         # get dev model samples and dev probe samples
         dev_model_samples_df = clips_per_speaker_df[clips_per_speaker_df['client_id'] == dev_model_sp].sort_values(
             by=['duration'],
@@ -306,7 +305,7 @@ def make_dv_samples(validated_dv):
                                     dev_model_samples_df.loc[i, 'client_id'],  # model_id
                                     dev_model_samples_df.loc[i, 'client_id'],  # claimed_client_id
                                     dev_model_samples_df.loc[i, 'client_id'])  # client_id
-                                   for i in dev_model_samples_df.index[-15:]]
+                                   for i in dev_model_samples_df.index[-60:]]
 
         # get eval model samples
         eval_model_samples_df = clips_per_speaker_df[clips_per_speaker_df['client_id'] == eval_model_sp].sort_values(
@@ -321,8 +320,7 @@ def make_dv_samples(validated_dv):
                                      eval_model_samples_df.loc[i, 'client_id'],  # model_id
                                      eval_model_samples_df.loc[i, 'client_id'],  # claimed_client_id
                                      eval_model_samples_df.loc[i, 'client_id'])  # client_id
-                                    for i in eval_model_samples_df.index[-15:]]
-
+                                    for i in eval_model_samples_df.index[-60:]]
     dev_model_set = set([sample[1] for sample in dev_model_samples])
     eval_model_set = set([sample[1] for sample in eval_model_samples])
     print(dev_model_set)
