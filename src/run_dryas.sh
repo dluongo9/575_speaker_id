@@ -1,4 +1,8 @@
 #!/bin/sh
+source ~/574/anaconda3/etc/profile.d/conda.sh
+
+conda activate ../envs
+
 echo create database
 cd ../config
 python create_multilingual_db.py
@@ -23,3 +27,4 @@ evaluate.py -d ../output/ru/output/ru/None/nonorm/scores-dev -e ../output/ru/out
 echo evaluate ta
 evaluate.py -d ../output/ta/output/ta/None/nonorm/scores-dev -e ../output/ta/output/ta/None/nonorm/scores-eval -D ../results/ta/DET-ta.pdf -c EER > ../results/ta/evaluate_results.txt
 
+conda deactivate
