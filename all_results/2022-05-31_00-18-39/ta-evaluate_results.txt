@@ -1,0 +1,2 @@
+The EER of the development set of '../output/ta/output/ta/None/nonorm/scores-dev' is 10.833%
+The HTER of the evaluation set of '../output/ta/output/ta/None/nonorm/scores-dev' is 3.542%
