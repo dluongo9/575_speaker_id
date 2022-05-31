@@ -26,6 +26,13 @@ def main():
     if len(sys.argv) > 4:
         duration_threshold = int(sys.argv[4])
 
+    with open('../logs/db_hyperparameters.txt', 'w') as file:
+        file.write(f'{ubm_data_duration} hour{"s" if ubm_data_duration == 1.0 else ""} of data for the UBM' + '\n')
+        file.write(f'4 impostors with {num_impostor_clips_per_model} samples each.' + '\n')
+        file.write(f'{num_enrollment_samples} true speaker samples used for enrollment models' + '\n')
+        file.write(f'{num_impostor_clips_per_model * 4} true speaker samples used for probes' + '\n')
+        file.write(f'duration threshold: {duration_threshold} seconds' + '\n')
+
     # make unit conversions
     ubm_data_duration *= 3600.0  # convert hours to seconds
     make_lst(ubm_data_duration, num_impostor_clips_per_model, num_enrollment_samples, duration_threshold)
