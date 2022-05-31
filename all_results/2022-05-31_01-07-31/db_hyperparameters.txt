@@ -1,0 +1,5 @@
+2.0 hours of data for the UBM
+4 impostors with 15 samples each.
+20 true speaker samples used for enrollment models
+60 true speaker samples used for probes
+duration threshold: 0.5 seconds
