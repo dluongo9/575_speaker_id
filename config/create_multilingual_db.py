@@ -115,10 +115,15 @@ def make_lst(ubm_data_duration, num_impostor_clips_per_model, num_enrollment_sam
     with open('../logs/demographic_metrics.txt', 'w') as out:
         for demog in primary_list_metrics:
             out.write(f"{demog}:" + '\n')
-            for key in primary_list_metrics[demog]:
+            if demog != 'duration':
+                for key in primary_list_metrics[demog]:
+                    out.write(f'\t{key}:\t' + '\n')
+                    out.write(f'\t\t{primary_list_metrics[demog][key]}' + '\n')
+                    out.write(f'\t\t{mirror_list_metrics[demog][key]}' + '\n')
+            else:
                 out.write(f'\t{key}:\t' + '\n')
-                out.write(f'\t\t{primary_list_metrics[demog][key]}' + '\n')
-                out.write(f'\t\t{mirror_list_metrics[demog][key]}' + '\n')
+                out.write(f'\t\t{primary_list_metrics[demog]}' + '\n')
+                out.write(f'\t\t{mirror_list_metrics[demog]}' + '\n')
 
     write_to_lst('../../databases/ubm-ru/norm/train_world.lst', ubm_ru_norm)
     write_to_lst('../../databases/ubm-ta/norm/train_world.lst', ubm_ta_norm)

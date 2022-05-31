@@ -19,10 +19,6 @@ for db in os.listdir(root):
                             for line in f:
                                 filenames.append(line.split()[0])
 
-with open('../logs/converted_files.txt', 'w') as out:
-    out.write('\n'.join(filenames) + '\n')
-
-
 with open('selective_convert.sh', 'w') as output:
     output.write('#!/bin/sh' + '\n')
     for file in filenames:
