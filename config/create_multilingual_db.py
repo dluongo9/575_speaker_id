@@ -6,8 +6,8 @@ import copy
 from collections import defaultdict
 
 # PATHS = {'norm': ['train_world.lst'],
-#          'dev': ['for_models.lst', 'for_probes.lst'],
-#          'eval': ['for_models.lst', 'for_probes.lst']}
+#          'dev': ['for_models.lst', 'for_scores.lst'],
+#          'eval': ['for_models.lst', 'for_scores.lst']}
 
 
 def main():
@@ -16,24 +16,26 @@ def main():
     pd.set_option('display.max_columns', None)
     pd.set_option('display.width', None)
 
-    ubm_data_duration, per_model_duration, duration_threshold = .1, 1.0, .5  # hours, minutes, seconds  # TODO update
+    ubm_data_duration, num_impostor_clips_per_model, num_enrollment_samples, duration_threshold = .1, 1, 1, .5  # hours, #, #, seconds  # TODO update
     if len(sys.argv) > 1:
         ubm_data_duration = int(sys.argv[1])
     if len(sys.argv) > 2:
-        per_model_duration = int(sys.argv[2])
+        num_impostor_clips_per_model = int(sys.argv[2])
     if len(sys.argv) > 3:
-        duration_threshold = int(sys.argv[3])
+        num_enrollment_samples = int(sys.argv[3])
+    if len(sys.argv) > 4:
+        duration_threshold = int(sys.argv[4])
 
     # make unit conversions
     ubm_data_duration *= 3600.0  # convert hours to seconds
-    per_model_duration *= 60.0  # convert minutes to seconds
-    make_lst(ubm_data_duration, per_model_duration, duration_threshold)
+    make_lst(ubm_data_duration, num_impostor_clips_per_model, num_enrollment_samples, duration_threshold)
 
 
-def make_lst(ubm_data_duration, per_model_duration, duration_threshold):
+def make_lst(ubm_data_duration, num_impostor_clips_per_model, num_enrollment_samples, duration_threshold):
     """
     :param ubm_data_duration: hours
-    :param per_model_duration: minutes
+    :param num_impostor_clips_per_model: number of impostor clips per model
+    :param num_enrollment_samples: number of samples to create a model
     :param duration_threshold: seconds
     :return:
     """
@@ -46,9 +48,9 @@ def make_lst(ubm_data_duration, per_model_duration, duration_threshold):
         os.mkdir('../../databases/ubm-ru/eval')
     open('../../databases/ubm-ru/norm/train_world.lst', 'w').close()
     open('../../databases/ubm-ru/dev/for_models.lst', 'w').close()
-    open('../../databases/ubm-ru/dev/for_probes.lst', 'w').close()
+    open('../../databases/ubm-ru/dev/for_scores.lst', 'w').close()
     open('../../databases/ubm-ru/eval/for_models.lst', 'w').close()
-    open('../../databases/ubm-ru/eval/for_probes.lst', 'w').close()
+    open('../../databases/ubm-ru/eval/for_scores.lst', 'w').close()
 
     # tamil
     if 'ubm-ta' not in os.listdir('../../databases'):
@@ -56,11 +58,12 @@ def make_lst(ubm_data_duration, per_model_duration, duration_threshold):
         os.mkdir('../../databases/ubm-ta/norm')
         os.mkdir('../../databases/ubm-ta/dev')
         os.mkdir('../../databases/ubm-ta/eval')
+
     open('../../databases/ubm-ta/norm/train_world.lst', 'w').close()
     open('../../databases/ubm-ta/dev/for_models.lst', 'w').close()
-    open('../../databases/ubm-ta/dev/for_probes.lst', 'w').close()
+    open('../../databases/ubm-ta/dev/for_scores.lst', 'w').close()
     open('../../databases/ubm-ta/eval/for_models.lst', 'w').close()
-    open('../../databases/ubm-ta/eval/for_probes.lst', 'w').close()
+    open('../../databases/ubm-ta/eval/for_scores.lst', 'w').close()
 
     validated_ru, validated_ta, validated_dv = preprocess_df()
 
@@ -81,39 +84,44 @@ def make_lst(ubm_data_duration, per_model_duration, duration_threshold):
 
     mirror_list_metrics = copy.deepcopy(primary_list_metrics)
 
-    # ubm_ru_norm, ubm_ta_norm = [], []
-    #
-    # while primary_list_metrics['duration'] < ubm_data_duration:
-    #     print('ubm total (hours):', primary_list_metrics['duration'] / 3600.0, sep='\t')
-    #     sample_idx, mirror_sample_idx = find_next_candidates(primary_list_metrics,
-    #                                                          validated_ru, validated_ta,
-    #                                                          duration_threshold)
-    #     primary_sample = validated_ru.loc[[sample_idx]]
-    #     mirror_sample = validated_ta.loc[[mirror_sample_idx]]
-    #
-    #     # update metrics in dictionaries
-    #     primary_list_metrics['ages'][primary_sample['age'].values[0]] += 1
-    #     primary_list_metrics['genders'][primary_sample['gender'].values[0]] += 1
-    #     primary_list_metrics['duration'] += float(primary_sample['duration'].values[0])
-    #     mirror_list_metrics['ages'][mirror_sample['age'].values[0]] += 1
-    #     mirror_list_metrics['genders'][mirror_sample['gender'].values[0]] += 1
-    #     mirror_list_metrics['duration'] += float(mirror_sample['duration'].values[0])
-    #
-    #     # put strings in list to later write to .lst files
-    #     ubm_ru_norm.append(validated_ru.loc[sample_idx, 'path'][:-4] + '\t' +
-    #                        validated_ru.loc[sample_idx, 'client_id'])
-    #     ubm_ta_norm.append(validated_ta.loc[mirror_sample_idx, 'path'][:-4] + '\t' +
-    #                        validated_ta.loc[mirror_sample_idx, 'client_id'])
-    #
-    #     # update data frames
-    #     validated_ru.drop(labels=sample_idx, axis='index', inplace=True)
-    #     validated_ta.drop(labels=mirror_sample_idx, axis='index', inplace=True)
-    #
-    # print("\nPrimary list metrics:", primary_list_metrics, sep='\t')
-    # print("Mirror list metrics:", mirror_list_metrics, '\n', sep='\t')
-    #
-    # write_to_lst('../../databases/ubm-ru/norm/train_world.lst', ubm_ru_norm)
-    # write_to_lst('../../databases/ubm-ta/norm/train_world.lst', ubm_ta_norm)
+    ubm_ru_norm, ubm_ta_norm = [], []
+
+    while primary_list_metrics['duration'] < ubm_data_duration:
+        print('ubm total (hours):', primary_list_metrics['duration'] / 3600.0, sep='\t')
+        sample_idx, mirror_sample_idx = find_next_candidates(primary_list_metrics,
+                                                             validated_ru, validated_ta,
+                                                             duration_threshold)
+        primary_sample = validated_ru.loc[[sample_idx]]
+        mirror_sample = validated_ta.loc[[mirror_sample_idx]]
+
+        # update metrics in dictionaries
+        primary_list_metrics['ages'][primary_sample['age'].values[0]] += 1
+        primary_list_metrics['genders'][primary_sample['gender'].values[0]] += 1
+        primary_list_metrics['duration'] += float(primary_sample['duration'].values[0])
+        mirror_list_metrics['ages'][mirror_sample['age'].values[0]] += 1
+        mirror_list_metrics['genders'][mirror_sample['gender'].values[0]] += 1
+        mirror_list_metrics['duration'] += float(mirror_sample['duration'].values[0])
+
+        # put strings in list to later write to .lst files
+        ubm_ru_norm.append(validated_ru.loc[sample_idx, 'path'][:-4] + '\t' +
+                           validated_ru.loc[sample_idx, 'client_id'])
+        ubm_ta_norm.append(validated_ta.loc[mirror_sample_idx, 'path'][:-4] + '\t' +
+                           validated_ta.loc[mirror_sample_idx, 'client_id'])
+
+        # update data frames
+        validated_ru.drop(labels=sample_idx, axis='index', inplace=True)
+        validated_ta.drop(labels=mirror_sample_idx, axis='index', inplace=True)
+
+    with open('../logs/demographic_metrics.txt', 'w') as out:
+        for demog in primary_list_metrics:
+            out.write(f"{demog}:" + '\n')
+            for key in primary_list_metrics[demog]:
+                out.write(f'\t{key}:\t' + '\n')
+                out.write(f'\t\t{primary_list_metrics[demog][key]}' + '\n')
+                out.write(f'\t\t{mirror_list_metrics[demog][key]}' + '\n')
+
+    write_to_lst('../../databases/ubm-ru/norm/train_world.lst', ubm_ru_norm)
+    write_to_lst('../../databases/ubm-ta/norm/train_world.lst', ubm_ta_norm)
 
     speakers, genders, ages, durations = [], [], [], []
     for speaker in validated_dv['client_id'].unique():
@@ -137,7 +145,9 @@ def make_lst(ubm_data_duration, per_model_duration, duration_threshold):
 
     # print(sorted_dv[sorted_dv['age'] == 'fourties']['gender'].value_counts())
 
-    make_dv_samples(validated_dv)
+    make_dv_samples(validated_dv, num_impostor_clips_per_model, num_enrollment_samples)
+
+    # validate('ubm-ru')
 
 
 def preprocess_durations(lang):
@@ -242,7 +252,7 @@ def find_next_candidates(primary_list_metrics, validated_ru_df, validated_ta_df,
     raise Exception("I couldn't find a matching sample in the primary and mirror lists that matched the criteria.")
 
 
-def make_dv_samples(validated_dv):
+def make_dv_samples(validated_dv, num_imp, num_enroll):
     # per demographic intersection, per speaker, number of clips > 3 seconds
     # outer keys: 4 demog, inner keys each: unique speaker, values: # clips
     clips_per_speaker = {('twenties', 'female'): defaultdict(int),
@@ -262,7 +272,6 @@ def make_dv_samples(validated_dv):
     dv_samples = [sorted(clips_per_speaker[key].items(),
                          key=lambda x: x[1],
                          reverse=True)[:4] for key in clips_per_speaker]  # top 4 speakers by number of clips
-    [print(line) for line in dv_samples]
 
     dev_imp_samples, eval_imp_samples = [], []
     dev_model_samples, dev_true_probe_samples = [], []
@@ -270,7 +279,7 @@ def make_dv_samples(validated_dv):
 
     for demog in dv_samples:
         dev_model_sp, eval_model_sp, dev_imp_sp, eval_imp_sp = demog[0][0], demog[1][0], demog[2][0], demog[3][0]
-        #print(eval_model_sp)
+        # print(eval_model_sp)
 
         # get dev_imp_samples
         dev_imp_samples_df = clips_per_speaker_df[clips_per_speaker_df['client_id'] == dev_imp_sp].sort_values(
@@ -280,7 +289,7 @@ def make_dv_samples(validated_dv):
                              dev_imp_samples_df.loc[i, 'client_id'],  # model_id
                              dev_imp_samples_df.loc[i, 'client_id'],  # claimed_client_id
                              dev_imp_samples_df.loc[i, 'client_id'])  # client_id
-                            for i in dev_imp_samples_df.index[-15:]]
+                            for i in dev_imp_samples_df.index[-num_imp:]]
 
         # get eval_imp samples
         eval_imp_samples_df = clips_per_speaker_df[clips_per_speaker_df['client_id'] == eval_imp_sp].sort_values(
@@ -290,7 +299,7 @@ def make_dv_samples(validated_dv):
                               eval_imp_samples_df.loc[i, 'client_id'],  # model_id
                               eval_imp_samples_df.loc[i, 'client_id'],  # claimed_client_id
                               eval_imp_samples_df.loc[i, 'client_id'])  # client_id
-                             for i in eval_imp_samples_df.index[-15:]]
+                             for i in eval_imp_samples_df.index[-num_imp:]]
         # get dev model samples and dev probe samples
         dev_model_samples_df = clips_per_speaker_df[clips_per_speaker_df['client_id'] == dev_model_sp].sort_values(
             by=['duration'],
@@ -300,12 +309,12 @@ def make_dv_samples(validated_dv):
         dev_model_samples += [(dev_model_samples_df.loc[i, 'path'][:-4],  # filename
                                dev_model_samples_df.loc[i, 'client_id'],  # model_id
                                dev_model_samples_df.loc[i, 'client_id'])  # client_id
-                              for i in dev_model_samples_df.index[:20]]
+                              for i in dev_model_samples_df.index[:num_enroll]]
         dev_true_probe_samples += [(dev_model_samples_df.loc[i, 'path'][:-4],  # filename
                                     dev_model_samples_df.loc[i, 'client_id'],  # model_id
                                     dev_model_samples_df.loc[i, 'client_id'],  # claimed_client_id
                                     dev_model_samples_df.loc[i, 'client_id'])  # client_id
-                                   for i in dev_model_samples_df.index[-60:]]
+                                   for i in dev_model_samples_df.index[-(num_imp * 4):]]
 
         # get eval model samples
         eval_model_samples_df = clips_per_speaker_df[clips_per_speaker_df['client_id'] == eval_model_sp].sort_values(
@@ -315,36 +324,73 @@ def make_dv_samples(validated_dv):
         eval_model_samples += [(eval_model_samples_df.loc[i, 'path'][:-4],  # filename
                                 eval_model_samples_df.loc[i, 'client_id'],  # model_id
                                 eval_model_samples_df.loc[i, 'client_id'])  # client_id
-                               for i in eval_model_samples_df.index[:20]]
+                               for i in eval_model_samples_df.index[:num_enroll]]
         eval_true_probe_samples += [(eval_model_samples_df.loc[i, 'path'][:-4],  # filename
                                      eval_model_samples_df.loc[i, 'client_id'],  # model_id
                                      eval_model_samples_df.loc[i, 'client_id'],  # claimed_client_id
                                      eval_model_samples_df.loc[i, 'client_id'])  # client_id
-                                    for i in eval_model_samples_df.index[-60:]]
+                                    for i in eval_model_samples_df.index[-(num_imp * 4):]]
     dev_model_set = set([sample[1] for sample in dev_model_samples])
     eval_model_set = set([sample[1] for sample in eval_model_samples])
-    print(dev_model_set)
-    print(eval_model_set)
+    # print(dev_model_set)
+    # print(eval_model_set)
+
+    dev_probe_list = []
+    eval_probe_list = []
+    eval_probe_list_ct = 0
+    for model in dev_model_set:
+        # put dev impostor with claimed client Id of model into dev_imposter list
+        dev_probe_list += ['\t'.join((sample[0], model, model, sample[3])) for sample in dev_imp_samples]
+    for model in eval_model_set:
+        # put eval impostor with claimed client Id of model into eval_imposter list
+        eval_probe_list += ['\t'.join((sample[0], model, model, sample[3])) for sample in eval_imp_samples]
+        eval_probe_list_ct += len(eval_imp_samples)
+
+    dev_probe_list += ['\t'.join(sample) for sample in dev_true_probe_samples]
+    eval_probe_list += ['\t'.join(sample) for sample in eval_true_probe_samples]
+    dev_model_list = ['\t'.join(sample) for sample in dev_model_samples]
+    eval_model_list = ['\t'.join(sample) for sample in eval_model_samples]
 
     # print(dev_imp_samples, len(dev_imp_samples), sep="\n", end='\n\n\n')
     # print(eval_imp_samples, len(eval_imp_samples), sep="\n")
 
-    # # write to russian dev and eval lists
-    # write_to_lst('../../databases/ubm-ru/dev/for_models.lst', dev_model_samples)
-    # write_to_lst('../../databases/ubm-ru/dev/for_probes.lst')
-    # write_to_lst('../../databases/ubm-ru/eval/for_models.lst', eval_model_samples)
-    # write_to_lst('../../databases/ubm-ru/eval/for_probes.lst')
-    #
-    # # write to tamil dev and eval lists
-    # write_to_lst('../../databases/ubm-ta/dev/for_models.lst', dev_model_samples)
-    # write_to_lst('../../databases/ubm-ta/dev/for_probes.lst')
-    # write_to_lst('../../databases/ubm-ta/eval/for_models.lst', eval_model_samples)
-    # write_to_lst('../../databases/ubm-ta/eval/for_probes.lst')
+    # write to russian dev and eval lists
+    write_to_lst('../../databases/ubm-ru/dev/for_models.lst', dev_model_list)
+    write_to_lst('../../databases/ubm-ru/dev/for_scores.lst', dev_probe_list)
+    write_to_lst('../../databases/ubm-ru/eval/for_models.lst', eval_model_list)
+    write_to_lst('../../databases/ubm-ru/eval/for_scores.lst', eval_probe_list)
+
+    # write to tamil dev and eval lists
+    write_to_lst('../../databases/ubm-ta/dev/for_models.lst', dev_model_list)
+    write_to_lst('../../databases/ubm-ta/dev/for_scores.lst', dev_probe_list)
+    write_to_lst('../../databases/ubm-ta/eval/for_models.lst', eval_model_list)
+    write_to_lst('../../databases/ubm-ta/eval/for_scores.lst', eval_probe_list)
 
 
 def write_to_lst(path, lst):
     with open(path, 'w') as file:
-        file.write('\n'.join(lst))
+        file.write('\n'.join(lst) + '\n')
+
+
+def validate(ubm):
+    dev_models = pd.read_csv(f'../../databases/{ubm}/dev/for_models.lst', sep='\t', header=None, low_memory=False)
+    dev_probes = pd.read_csv(f'../../databases/{ubm}/dev/for_scores.lst', sep='\t', header=None, low_memory=False)
+    eval_models = pd.read_csv(f'../../databases/{ubm}/eval/for_models.lst', sep='\t', header=None, low_memory=False)
+    eval_probes = pd.read_csv(f'../../databases/{ubm}/eval/for_scores.lst', sep='\t',
+                              header=None, names=['filename', 'model_id', 'claimed_client_id', 'client_id'],
+                              low_memory=False)
+
+    eval_probes_dict = dict()
+    for i in eval_probes.index:
+        client_id = eval_probes.loc[i, 'client_id']
+        claim = eval_probes.loc[i, 'claimed_client_id']
+        if client_id not in eval_probes_dict:
+            eval_probes_dict[client_id] = defaultdict(int)
+            eval_probes_dict[client_id][claim] += 1
+        else:
+            eval_probes_dict[client_id][claim] += 1
+
+    print(eval_probes_dict)
 
 
 if __name__ == "__main__":

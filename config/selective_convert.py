@@ -1,17 +1,32 @@
 import os
+import sys
 
-root = '../../databases/toy_database'
-path = "../../databases/corpora/untarred/ru"
+root = f"../../databases"
+ignore = ['.DS_Store']
+
+filenames = []
+
+for db in os.listdir(root):
+    if db not in ignore and 'ubm-' in db:
+        print('db', db)
+        for dir in os.listdir(root + '/' + db):
+            if dir not in ignore:
+                print('dir', dir)
+                for file in os.listdir(root + '/' + db + '/' + dir):
+                    if file not in ignore:
+                        with open(root + '/' + db + '/' + dir + '/' + file, 'r') as f:
+                            f = f.readlines()
+                            for line in f:
+                                filenames.append(line.split()[0])
+
+with open('../logs/converted_files.txt', 'w') as out:
+    out.write('\n'.join(filenames) + '\n')
+
+
 with open('selective_convert.sh', 'w') as output:
     output.write('#!/bin/sh' + '\n')
-    for dir in os.listdir(root):
-        if dir != '.DS_Store':
-            for file in os.listdir(root + '/' + dir):
-                if file != '.DS_Store':
-                    with open(root + '/' + dir + '/' + file, 'r') as f:
-                        f = f.readlines()
-                        for line in f:
-                            filename = line.split()[0]
-                            output.write(f'ffmpeg -i "{path}/clips/{filename}.mp3" "{path}/wav/{filename}.wav" -n' + '\n')
+    for file in filenames:
+        lang = file.split('_')[2]
+        output.write(f'ffmpeg -i "../../databases/corpora/untarred/{lang}/clips/{file}.mp3" "../../databases/corpora/untarred/wav/{file}.wav" -n' + '\n')
 
 # ffmpeg -i "../../databases/corpora/untarred/ru/clips/$file" "../../databases/corpora/untarred/ru/wav/${file%.*}.wav"
