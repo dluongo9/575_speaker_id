@@ -24,3 +24,5 @@ os.system(f'cp ../results/ta/collect_results_ta.txt ../all_results/{time}/ta-col
 # copy experiment.info files
 os.system(f'cp ../output/ru/output/ru/None/Experiment.info ../all_results/{time}/ru-Experiment.info')
 os.system(f'cp ../output/ta/output/ta/None/Experiment.info ../all_results/{time}/ta-Experiment.info')
+
+os.system(f'touch ../all_results/{time}/exp_notes.txt')
