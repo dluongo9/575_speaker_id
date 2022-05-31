@@ -121,7 +121,7 @@ def make_lst(ubm_data_duration, num_impostor_clips_per_model, num_enrollment_sam
                     out.write(f'\t\t{primary_list_metrics[demog][key]}' + '\n')
                     out.write(f'\t\t{mirror_list_metrics[demog][key]}' + '\n')
             else:
-                out.write(f'\t{key}:\t' + '\n')
+                out.write(f'\t{demog}:\t' + '\n')
                 out.write(f'\t\t{primary_list_metrics[demog]}' + '\n')
                 out.write(f'\t\t{mirror_list_metrics[demog]}' + '\n')
 
@@ -174,13 +174,15 @@ def preprocess_durations(lang):
                         columns=['duration', 'path'])
 
 
-def remove_duplicates(df):
+def remove_duplicates_and_empties(df):
     """
     Remove samples from speakers who belong to more than one demographic group.
     :param df: data frame to process
     :return: df without the time traveling or transitioning speaker
     """
     # key = client_id, value = set of demog tuples
+    df = df[df['duration'] >= 1.0]  # nothing less than 1 second
+
     demogs = dict()
     for i in df.index:
         if df.loc[i, 'client_id'] not in demogs:
@@ -212,19 +214,19 @@ def preprocess_df():
     # validated_ru.sort_values(by=['duration'], ascending=False)
     validated_ru.drop(columns=['sentence', 'up_votes', 'down_votes', 'accents', 'locale', 'segment'], inplace=True)
     validated_ru.dropna(axis='index', how='any', inplace=True)
-    validated_ru = remove_duplicates(validated_ru)
+    validated_ru = remove_duplicates_and_empties(validated_ru)
     validated_ru.reset_index(drop=True, inplace=True)
 
     # validated_ta.sort_values(by=['duration'], ascending=False)
     validated_ta.drop(columns=['sentence', 'up_votes', 'down_votes', 'accents', 'locale', 'segment'], inplace=True)
     validated_ta.dropna(axis='index', how='any', inplace=True)
-    validated_ta = remove_duplicates(validated_ta)
+    validated_ta = remove_duplicates_and_empties(validated_ta)
     validated_ta.reset_index(drop=True, inplace=True)
 
     # validated_dv.sort_values(by=['duration'], ascending=False)
     validated_dv.drop(columns=['sentence', 'up_votes', 'down_votes', 'accents', 'locale', 'segment'], inplace=True)
     validated_dv.dropna(axis='index', how='any', inplace=True)
-    validated_dv = remove_duplicates(validated_dv)
+    validated_dv = remove_duplicates_and_empties(validated_dv)
     validated_dv.reset_index(drop=True, inplace=True)
 
     return validated_ru, validated_ta, validated_dv
