@@ -16,7 +16,7 @@ def main():
     pd.set_option('display.max_columns', None)
     pd.set_option('display.width', None)
 
-    ubm_data_duration, num_impostor_clips_per_model, num_enrollment_samples, duration_threshold = .1, 1, 1, .5  # hours, #, #, seconds  # TODO update
+    ubm_data_duration, num_impostor_clips_per_model, num_enrollment_samples, duration_threshold = 1, 15, 20, .5  # hours, #, #, seconds  # TODO update
     if len(sys.argv) > 1:
         ubm_data_duration = int(sys.argv[1])
     if len(sys.argv) > 2:
@@ -86,7 +86,7 @@ def make_lst(ubm_data_duration, num_impostor_clips_per_model, num_enrollment_sam
 
     ubm_ru_norm, ubm_ta_norm = [], []
 
-    while primary_list_metrics['duration'] < ubm_data_duration:
+    while primary_list_metrics['duration'] <= ubm_data_duration:
         print('ubm total (hours):', primary_list_metrics['duration'] / 3600.0, sep='\t')
         sample_idx, mirror_sample_idx = find_next_candidates(primary_list_metrics,
                                                              validated_ru, validated_ta,
