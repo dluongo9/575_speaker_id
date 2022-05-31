@@ -43,7 +43,7 @@ def make_lst(ubm_data_duration, num_impostor_clips_per_model, num_enrollment_sam
     # russian
     if 'ubm-ru' not in os.listdir('../../databases'):
         os.mkdir('../../databases/ubm-ru')
-        os.mkdir('../../databases/ubm-ru/')
+        os.mkdir('../../databases/ubm-ru/norm')
         os.mkdir('../../databases/ubm-ru/dev')
         os.mkdir('../../databases/ubm-ru/eval')
     open('../../databases/ubm-ru/norm/train_world.lst', 'w').close()

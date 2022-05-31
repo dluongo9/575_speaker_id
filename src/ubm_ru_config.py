@@ -12,8 +12,8 @@ import bob.bio.base.database
 import bob.bio.gmm.algorithm
 from bob.bio.spear.database import AudioBioFile
 # database = 'voxforge'
-database = bob.bio.base.database.FileListBioDatabase('../../databases/toy_database', 'toy',
-                                                     original_directory='../../databases/corpora/untarred/ru/wav',
+database = bob.bio.base.database.FileListBioDatabase('../../databases/ubm-ru', 'ubm-ru',
+                                                     original_directory='../../databases/corpora/untarred/wav',
                                                      original_extension='.wav',
                                                      bio_file_class=AudioBioFile)
 
@@ -35,7 +35,7 @@ algorithm = bob.bio.gmm.algorithm.GMM(200)
 
 # The sub-directory where the files of the current experiment should be stored. Please specify a directory name with a name describing your experiment
 
-sub_directory = 'output'
+sub_directory = 'output/ru'
 
 
 ##################################################
@@ -62,12 +62,12 @@ groups = ['dev', 'eval']
 
 # The directory for temporary files; if --temp-directory is not specified, "temp" is used
 
-temp_directory = '../../temp'
+temp_directory = '../../temp/ru'
 
 
 # The directory for resulting score files; if --result-directory is not specified, "results" is used
 
-result_directory = '../output/test_exp'
+result_directory = '../output/ru'
 
 
 # Increase the verbosity level from 0 (only error messages) to 1 (warnings), 2 (log messages), 3 (debug information) by adding the --verbose option as often as desired (e.g. '-vvv' for debug).
