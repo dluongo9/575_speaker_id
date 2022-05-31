@@ -1,7 +1,7 @@
 #!/bin/sh
 echo create database
 cd ../config
-python create_multilingual_db.py
+python create_multilingual_db.py $@
 
 echo selective convert ru + ta
 python selective_convert.py

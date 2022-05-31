@@ -5,7 +5,7 @@ conda activate ../envs
 
 echo create database
 cd ../config
-python create_multilingual_db.py
+python create_multilingual_db.py $@
 
 echo verify experiment ru
 cd ../src
@@ -26,5 +26,8 @@ evaluate.py -d ../output/ru/output/ru/None/nonorm/scores-dev -e ../output/ru/out
 
 echo evaluate ta
 evaluate.py -d ../output/ta/output/ta/None/nonorm/scores-dev -e ../output/ta/output/ta/None/nonorm/scores-eval -D ../results/ta/DET-ta.pdf -c EER > ../results/ta/evaluate_results.txt
+
+echo saving results to permanent location
+python move_results.py
 
 conda deactivate
