@@ -1,0 +1,3 @@
+  dev  nonorm     dev  ztnorm      eval nonorm    eval ztnorm            directory
+----------------------------------------------------------------------------------------------------
+    25.208%            None         15.625%            None        ../output/ta/output/ta/None

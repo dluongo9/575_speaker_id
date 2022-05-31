@@ -26,6 +26,7 @@ def main():
     if len(sys.argv) > 4:
         duration_threshold = float(sys.argv[4])
 
+    # TODO: can we write all results to the same file?
     with open('../logs/db_hyperparameters.txt', 'w') as file:
         file.write(f'{ubm_data_duration} hour{"s" if ubm_data_duration == 1.0 else ""} of data for the UBM' + '\n')
         file.write(f'4 impostors with {num_impostor_clips_per_model} samples each.' + '\n')
