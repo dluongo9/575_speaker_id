@@ -30,7 +30,7 @@ extractor = 'mfcc-60'
 
 # Algorithm of the experiment; registered algorithms are: ['bic', 'distance-cosine', 'distance-euclidean', 'distance-hamming', 'gmm-banca', 'gmm-timit', 'gmm-tomi', 'gmm-tomi-scfc', 'gmm-voxforge', 'isv-avspoof', 'isv-mobio', 'isv-voxforge', 'ivec-avspoof', 'ivec-cosine-voxforge', 'ivec-plda-mobio', 'ivec-plda-voxforge', 'jfa-voxforge', 'lda', 'pca', 'pca+lda', 'pca+plda', 'plda']
 
-algorithm = bob.bio.gmm.algorithm.GMM(200)
+algorithm = bob.bio.gmm.algorithm.GMM(512)
 
 
 # The sub-directory where the files of the current experiment should be stored. Please specify a directory name with a name describing your experiment

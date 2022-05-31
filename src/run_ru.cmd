@@ -1,4 +1,4 @@
-executable = run.sh
+executable = run_ru_dryas.sh
 getenv = true
 output = run.out
 error = run.err

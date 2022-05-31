@@ -23,7 +23,7 @@ echo collect results ta
 collect_results.py -vv --directory ../output/ta/ --sort -o ../results/ta/collect_results_ta.txt
 
 echo evaluate ru
-evaluate.py -d ../output/ru/output/ru/None/nonorm/scores-dev -e ../output/ru/output/ru/None/nonorm/scores-eval -D ../results/ru/DET-ru.pdf
+evaluate.py -d ../output/ru/output/ru/None/nonorm/scores-dev -e ../output/ru/output/ru/None/nonorm/scores-eval -D ../results/ru/DET-ru.pdf -c EER > ../results/ru/evaluate_results.txt
 
 echo evaluate ta
-evaluate.py -d ../output/ta/output/ta/None/nonorm/scores-dev -e ../output/ta/output/ta/None/nonorm/scores-eval -D ../results/ta/DET-ta.pdf
+evaluate.py -d ../output/ta/output/ta/None/nonorm/scores-dev -e ../output/ta/output/ta/None/nonorm/scores-eval -D ../results/ta/DET-ta.pdf -c EER > ../results/ta/evaluate_results.txt
