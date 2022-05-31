@@ -18,13 +18,13 @@ def main():
 
     ubm_data_duration, num_impostor_clips_per_model, num_enrollment_samples, duration_threshold = 1, 15, 20, .5  # hours, #, #, seconds  # TODO update
     if len(sys.argv) > 1:
-        ubm_data_duration = int(sys.argv[1])
+        ubm_data_duration = float(sys.argv[1])
     if len(sys.argv) > 2:
         num_impostor_clips_per_model = int(sys.argv[2])
     if len(sys.argv) > 3:
         num_enrollment_samples = int(sys.argv[3])
     if len(sys.argv) > 4:
-        duration_threshold = int(sys.argv[4])
+        duration_threshold = float(sys.argv[4])
 
     with open('../logs/db_hyperparameters.txt', 'w') as file:
         file.write(f'{ubm_data_duration} hour{"s" if ubm_data_duration == 1.0 else ""} of data for the UBM' + '\n')
