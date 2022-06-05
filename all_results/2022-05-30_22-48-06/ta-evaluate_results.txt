@@ -1,0 +1,6 @@
+Dev FAR:  0.1125
+Dev FRR:  0.1125
+The EER of the development set of '../output/ta/output/ta/None/nonorm/scores-dev' is 11.250%
+Eval FAR:  0.0375
+Eval FRR:  0.0125
+The HTER of the evaluation set of '../output/ta/output/ta/None/nonorm/scores-dev' is 2.500%
