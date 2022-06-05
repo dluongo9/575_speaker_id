@@ -16,7 +16,7 @@ def main():
     pd.set_option('display.max_columns', None)
     pd.set_option('display.width', None)
 
-    ubm_data_duration, num_impostor_clips_per_model, num_enrollment_samples, duration_threshold = 1, 15, 20, .5  # hours, #, #, seconds  # TODO update
+    ubm_data_duration, num_impostor_clips_per_model, num_enrollment_samples, duration_threshold = .1, 15, 20, .5  # hours, #, #, seconds  # TODO update
     if len(sys.argv) > 1:
         ubm_data_duration = float(sys.argv[1])
     if len(sys.argv) > 2:
@@ -75,66 +75,7 @@ def make_lst(ubm_data_duration, num_impostor_clips_per_model, num_enrollment_sam
 
     validated_ru, validated_ta, validated_dv = preprocess_df()
 
-    ages = set(validated_ru['age'].unique()) & set(validated_ta['age'].unique())
-    genders = {'male', 'female'}  # not other /: (we don't know what that means in this data)
-
-    primary_list_metrics = dict()
-
-    primary_list_metrics['ages'] = dict()
-    for key in ages:
-        primary_list_metrics['ages'][key] = 0
-
-    primary_list_metrics['genders'] = dict()
-    for key in genders:
-        primary_list_metrics['genders'][key] = 0
-
-    primary_list_metrics['duration'] = 0.0
-
-    mirror_list_metrics = copy.deepcopy(primary_list_metrics)
-
-    ubm_ru_norm, ubm_ta_norm = [], []
-
-    while primary_list_metrics['duration'] <= ubm_data_duration:
-        print('ubm total (hours):', primary_list_metrics['duration'] / 3600.0, sep='\t')
-        sample_idx, mirror_sample_idx = find_next_candidates(primary_list_metrics,
-                                                             validated_ru, validated_ta,
-                                                             duration_threshold)
-        primary_sample = validated_ru.loc[[sample_idx]]
-        mirror_sample = validated_ta.loc[[mirror_sample_idx]]
-
-        # update metrics in dictionaries
-        primary_list_metrics['ages'][primary_sample['age'].values[0]] += 1
-        primary_list_metrics['genders'][primary_sample['gender'].values[0]] += 1
-        primary_list_metrics['duration'] += float(primary_sample['duration'].values[0])
-        mirror_list_metrics['ages'][mirror_sample['age'].values[0]] += 1
-        mirror_list_metrics['genders'][mirror_sample['gender'].values[0]] += 1
-        mirror_list_metrics['duration'] += float(mirror_sample['duration'].values[0])
-
-        # put strings in list to later write to .lst files
-        ubm_ru_norm.append(validated_ru.loc[sample_idx, 'path'][:-4] + '\t' +
-                           validated_ru.loc[sample_idx, 'client_id'])
-        ubm_ta_norm.append(validated_ta.loc[mirror_sample_idx, 'path'][:-4] + '\t' +
-                           validated_ta.loc[mirror_sample_idx, 'client_id'])
-
-        # update data frames
-        validated_ru.drop(labels=sample_idx, axis='index', inplace=True)
-        validated_ta.drop(labels=mirror_sample_idx, axis='index', inplace=True)
-
-    with open('../logs/demographic_metrics.txt', 'w') as out:
-        for demog in primary_list_metrics:
-            out.write(f"{demog}:" + '\n')
-            if demog != 'duration':
-                for key in primary_list_metrics[demog]:
-                    out.write(f'\t{key}:\t' + '\n')
-                    out.write(f'\t\t{primary_list_metrics[demog][key]}' + '\n')
-                    out.write(f'\t\t{mirror_list_metrics[demog][key]}' + '\n')
-            else:
-                out.write(f'\t{demog}:\t' + '\n')
-                out.write(f'\t\t{primary_list_metrics[demog]}' + '\n')
-                out.write(f'\t\t{mirror_list_metrics[demog]}' + '\n')
-
-    write_to_lst('../../databases/ubm-ru/norm/train_world.lst', ubm_ru_norm)
-    write_to_lst('../../databases/ubm-ta/norm/train_world.lst', ubm_ta_norm)
+    # make_norm(validated_ru, validated_ta, ubm_data_duration, duration_threshold)
 
     # speakers, genders, ages, durations = [], [], [], []
     # for speaker in validated_dv['client_id'].unique():
@@ -538,6 +479,7 @@ def make_dv_samples(validated_dv, num_imp, num_enroll):
     eval_model_samples, eval_true_probe_samples = [], []
 
     for demog in dv_samples:
+        # extract each speaker's speaker ID.
         dev_model_sp, eval_model_sp, dev_imp_sp, eval_imp_sp = demog[0][0], demog[1][0], demog[2][0], demog[3][0]
         # print(eval_model_sp)
 
