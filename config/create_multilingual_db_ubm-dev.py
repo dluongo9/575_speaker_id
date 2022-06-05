@@ -158,7 +158,10 @@ def make_lst(ubm_data_duration, num_impostor_clips_per_model, num_enrollment_sam
 
     # print(sorted_dv[sorted_dv['age'] == 'fourties']['gender'].value_counts())
 
-    make_dv_samples(validated_dv, num_impostor_clips_per_model, num_enrollment_samples)
+    # TODO finish make_dev()
+    make_dev(validated_ru, validated_ta, num_impostor_clips_per_model, num_enrollment_samples)
+    # make_eval(validated_dv, num_impostor_clips_per_model, num_enrollment_samples)
+    # make_dv_samples(validated_dv, num_impostor_clips_per_model, num_enrollment_samples)
 
     # validate('ubm-ru')
 
