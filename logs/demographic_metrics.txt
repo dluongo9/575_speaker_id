@@ -1,30 +1,27 @@
 ages:
-	twenties:	
-		11
-		11
-	fifties:	
-		11
-		11
 	thirties:	
-		11
-		11
-	teens:	
-		11
-		11
+		13
+		13
+	twenties:	
+		13
+		13
+	fifties:	
+		13
+		13
 	fourties:	
-		11
-		11
-	sixties:	
-		10
-		10
+		12
+		12
+	teens:	
+		12
+		12
 genders:
-	female:	
-		33
-		33
 	male:	
 		32
 		32
+	female:	
+		31
+		31
 duration:
 	duration:	
-		365.79
-		365.7699999999999
+		368.7
+		365.9199999999999

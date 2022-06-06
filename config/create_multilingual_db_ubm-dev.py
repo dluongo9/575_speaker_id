@@ -16,7 +16,10 @@ def main():
     pd.set_option('display.max_columns', None)
     pd.set_option('display.width', None)
 
-    ubm_data_duration, num_impostor_clips_per_model, num_enrollment_samples, duration_threshold = .1, 15, 20, .5  # hours, #, #, seconds  # TODO update
+    # defaults
+    num_impostor_clips_per_dev_model, num_impostor_clips_per_eval_model, num_enrollment_samples = 6, 15, 20
+    ubm_data_duration, duration_threshold = 1, .5  # hours, seconds
+
     if len(sys.argv) > 1:
         ubm_data_duration = float(sys.argv[1])
     if len(sys.argv) > 2:

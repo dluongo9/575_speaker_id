@@ -5,7 +5,7 @@ conda activate ../envs
 
 echo create database
 cd ../config
-python create_multilingual_db.py $@
+python create_multilingual_db_ubm-dev.py $@
 
 echo verify experiment ru
 cd ../src
