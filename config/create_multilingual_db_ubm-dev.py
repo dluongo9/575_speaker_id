@@ -20,15 +20,15 @@ def main():
     num_impostor_clips_per_dev_model, num_impostor_clips_per_eval_model, num_enrollment_samples = 6, 15, 20
     ubm_data_duration, duration_threshold = 1, .5  # hours, seconds
 
-    if len(sys.argv) > 1:
+    if len(sys.argv) > 0:
         ubm_data_duration = float(sys.argv[1])
-    if len(sys.argv) > 2:
+    if len(sys.argv) > 1:
         num_impostor_clips_per_dev_model = int(sys.argv[2])
-    if len(sys.argv) > 3:
+    if len(sys.argv) > 2:
         num_impostor_clips_per_eval_model = int(sys.argv[3])
-    if len(sys.argv) > 4:
+    if len(sys.argv) > 3:
         num_enrollment_samples = int(sys.argv[4])
-    if len(sys.argv) > 5:
+    if len(sys.argv) > 4:
         duration_threshold = float(sys.argv[5])
 
     # TODO: can we write all results to the same file?
