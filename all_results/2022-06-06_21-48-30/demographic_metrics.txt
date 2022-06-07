@@ -1,0 +1,27 @@
+ages:
+	thirties:	
+		913
+		913
+	fifties:	
+		913
+		913
+	teens:	
+		913
+		913
+	fourties:	
+		912
+		912
+	twenties:	
+		913
+		913
+genders:
+	female:	
+		2282
+		2282
+	male:	
+		2282
+		2282
+duration:
+	duration:	
+		25200.230000000058
+		25151.09000000002
