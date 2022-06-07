@@ -27,9 +27,9 @@ def main():
     if len(sys.argv) > 3:
         num_impostor_clips_per_eval_model = int(sys.argv[3])
     if len(sys.argv) > 4:
-        num_enrollment_samples = int(sys.argv[3])
+        num_enrollment_samples = int(sys.argv[4])
     if len(sys.argv) > 5:
-        duration_threshold = float(sys.argv[4])
+        duration_threshold = float(sys.argv[5])
 
     # TODO: can we write all results to the same file?
     with open('../logs/db_hyperparameters.txt', 'w') as file:
