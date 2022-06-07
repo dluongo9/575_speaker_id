@@ -87,9 +87,11 @@ def make_lst(ubm_data_duration, num_impostor_clips_per_dev_model, num_impostor_c
 
     validated_ru, validated_ta, validated_dv = preprocess_df()
 
+    validated_ru, validated_ta = make_dev(validated_ru, validated_ta,
+                                          num_impostor_clips_per_dev_model, num_enrollment_samples)
+
     make_norm(validated_ru, validated_ta, ubm_data_duration, duration_threshold)
 
-    make_dev(validated_ru, validated_ta, num_impostor_clips_per_dev_model, num_enrollment_samples)
     make_eval(validated_dv, num_impostor_clips_per_eval_model, num_enrollment_samples)
 
     # validate('ubm-ru')
@@ -285,6 +287,7 @@ def make_dev(validated_ru, validated_ta, num_imp, num_enroll):
     write_to_lst('../../databases/ubm-ta/dev/for_models.lst', dev_model_list_ta)
     write_to_lst('../../databases/ubm-ta/dev/for_scores.lst', dev_probe_list_ta)
     print('dev .lst files written\n')
+    return validated_ru, validated_ta
 
 
 def make_dev_lsts(df, num_imp_dev, num_enroll):
