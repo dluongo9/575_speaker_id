@@ -276,8 +276,8 @@ def make_norm(validated_ru, validated_ta, ubm_data_duration, duration_threshold)
 
 def make_dev(validated_ru, validated_ta, num_imp, num_enroll):
     print('making dev .lst files\n')
-    dev_model_list_ru, dev_probe_list_ru = make_dev_lsts(validated_ru, num_imp, num_enroll)
-    dev_model_list_ta, dev_probe_list_ta = make_dev_lsts(validated_ta, num_imp, num_enroll)
+    dev_model_list_ru, dev_probe_list_ru, validated_ru = make_dev_lsts(validated_ru, num_imp, num_enroll)
+    dev_model_list_ta, dev_probe_list_ta, validated_ta = make_dev_lsts(validated_ta, num_imp, num_enroll)
 
     # write to russian dev lists
     write_to_lst('../../databases/ubm-ru/dev/for_models.lst', dev_model_list_ru)
@@ -384,7 +384,7 @@ def make_dev_lsts(df, num_imp_dev, num_enroll):
     # print('dev model list:', len(dev_model_list))
     # print()
 
-    return dev_model_list, dev_probe_list
+    return dev_model_list, dev_probe_list, df
 
 
 def make_eval(validated_dv, num_imp_eval, num_enroll):
