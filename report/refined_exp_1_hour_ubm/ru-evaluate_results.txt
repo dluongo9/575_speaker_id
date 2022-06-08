@@ -1,0 +1,7 @@
+Threshold:  1.008138285
+Dev FAR:  0.085
+Dev FRR:  0.085
+The EER of the development set of '../output/ru/output/ru/None/nonorm/scores-dev' is 8.500%
+Eval FAR:  0.29583333333333334
+Eval FRR:  0.020833333333333332
+The HTER of the evaluation set of '../output/ru/output/ru/None/nonorm/scores-dev' is 15.833%
